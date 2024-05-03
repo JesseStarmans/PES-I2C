@@ -98,7 +98,7 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1); //het starten van de timer voor de servo PWM
 
   uint32_t adcWaarde2;
   char buffer2[100];
@@ -109,37 +109,29 @@ int main(void)
   while (1)
   {
 
-	  TIM2->CCR1 = status;
-	  //niet_ingedruktb=HAL_GPIO_ReadPin(BlauweKnop_GPIO_Port, BlauweKnop_Pin);
-	  //niet_ingedruktg=HAL_GPIO_ReadPin(GroeneKnop_GPIO_Port, GroeneKnop_Pin);
+	  TIM2->CCR1 = status; //pulse wordt gelijk gesteld aan status(deze wordt gebruikt om de servo aan te sturen)
 
-	  if(autohand){
-		  HAL_ADC_Start(&hadc1);
-		  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-		  adcWaarde2=HAL_ADC_GetValue(&hadc1);
-		  int len1=snprintf(buffer2,50,"waarde ldr %lu \n\r",adcWaarde2);
-		  HAL_UART_Transmit(&huart2,buffer2,len1, HAL_MAX_DELAY);
-		  HAL_ADC_Stop(&hadc1);
-		  if(adcWaarde2 > 3200 ){
-			  HAL_Delay(1000);
-			  status = 20;
-		  }
-		  if(adcWaarde2 < 2000 ){
-			  HAL_Delay(1000);
-			  status = 125;
-		  }
-
-	  }
-	  int len1=snprintf(buffer2, 50, "Status waarde: %d \n\r", status);
-	  HAL_UART_Transmit(&huart2, buffer2, len1, HAL_MAX_DELAY);
-	  /*else{
-		  if (!niet_ingedruktb) {
-			  status -= 20;
-		  }
-		  if (!niet_ingedruktg) {
-			  status = 125;
-		  }
-	  }*/
+      
+      if (autohand) { // Controleer of automatische modus is ingeschakeld
+          HAL_ADC_Start(&hadc1); // Start de ADC-module
+          HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY); // Wacht tot de ADC-conversie is voltooid
+          adcWaarde2 = HAL_ADC_GetValue(&hadc1); // Haal de waarde van de lichtsensor op
+          int len1 = snprintf(buffer2, 50, "waarde ldr %lu \n\r", adcWaarde2); // Schrijf de lichtsensorwaarde in buffer2
+          HAL_UART_Transmit(&huart2, buffer2, len1, HAL_MAX_DELAY); // Zend de lichtsensorwaarde via UART
+          HAL_ADC_Stop(&hadc1); // Stop de ADC-module
+          
+          if (adcWaarde2 > 3200) { // Controleer of de lichtsensorwaarde hoger is dan 3200
+              HAL_Delay(1000); // Wacht 1 seconde
+              status = 20; // Stel de servo-status in op 20 (gordijnen sluiten)
+          }
+          if (adcWaarde2 < 2000) { // Controleer of de lichtsensorwaarde lager is dan 2000
+              HAL_Delay(1000); // Wacht 1 seconde
+              status = 125; // Stel de servo-status in op 125 (gordijnen openen)
+          }
+      }
+      int len1 = snprintf(buffer2, 50, "Status waarde: %d \n\r", status); // Schrijf de huidige status in buffer2
+      HAL_UART_Transmit(&huart2, buffer2, len1, HAL_MAX_DELAY); // Zend de huidige status via UART
+	 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -412,21 +404,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	if (GPIO_Pin == GPIO_PIN_6) {
-		if (autohand == 1) {
-			autohand = 0;
-		}
-		else {
-			autohand = 1;
-		}
-	}
-	else if (GPIO_Pin == GPIO_PIN_1 && autohand == 0) { //blauw
-		status = 20;
-	}
-	else if (GPIO_Pin == GPIO_PIN_8 && autohand == 0) { //groen
-		status = 125;
-	}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) { // Callback-functie die wordt aangeroepen bij een externe interrupt (in dit geval 1 van de knoppen)
+    if (GPIO_Pin == GPIO_PIN_6) { // Controleer of de interrupt wordt gegenereerd door pin 6 (witte knop)
+        if (autohand == 1) { // Controleer of de modus momenteel automatisch is
+            autohand = 0; // Schakel naar handmatige modus
+        }
+        else {
+            autohand = 1; // Schakel naar automatische modus
+        }
+    }
+    else if (GPIO_Pin == GPIO_PIN_1 && autohand == 0) { // Controleer of de interrupt van pin 1 komt (blauwe knop) en de modus handmatig is
+        status = 20; // Stel de servo-status in op 20 (gordijnen sluiten)
+    }
+    else if (GPIO_Pin == GPIO_PIN_8 && autohand == 0) { // Controleer of de interrupt van pin 8 komt (groene knop) en de modus handmatig is
+        status = 125; // Stel de servo-status in op 125 (gordijnen openen)
+    }
 }
 /* USER CODE END 4 */
 
