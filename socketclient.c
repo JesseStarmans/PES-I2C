@@ -7,6 +7,9 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 
+
+//gebruik gemaakt van https://www.linuxhowtos.org/C_C++/socket.htm, check site
+
 void error(const char *msg)
 {
     perror(msg);
