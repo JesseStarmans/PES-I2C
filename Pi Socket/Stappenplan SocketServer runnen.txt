@@ -1,0 +1,5 @@
+Ga naar de socket map (in terminal): cd /home/pigroepg/Documents/Socket
+
+Compileer de main (dus de SocketMain.cpp waar de SocketServer.cpp in zit): g++ -Wall -o SocketMain SocketMain.cpp SocketServer.cpp
+
+Run de SocketServer (in een nieuwe terminal voor de overzichtelijkheid): lxterminal -e ./SocketMain
