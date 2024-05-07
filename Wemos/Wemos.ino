@@ -26,10 +26,15 @@ void setup() {
   Serial.println("Server started");
   Serial.print("IP: ");
   Serial.println(WiFi.localIP());
-  sendIP();
+  
+  // sendIP functies bestaan om de server IP invulling te geven. Comment uit wat je niet gebruikt
+  sendIP("Wemos1");
+  sendIP("Wemos2");
+  sendIP("Wemos3");
+  Serial.println("Waiting for request");
 }
 
-void sendIP(){
+void sendIP(String name){
   IPAddress serverIP(145, 52, 127, 169);
   
   WiFiClient client;
@@ -38,9 +43,9 @@ void sendIP(){
   
   // Send a message to the server
   IPAddress localIP = WiFi.localIP();
-  char ipFull[16] = "";
-  sprintf(ipFull, "Wemos1 %d.%d.%d.%d", localIP[0], localIP[1],localIP[2],localIP[3]);
-
+  char ipFull[50] = "";
+  sprintf(ipFull, "%s %d.%d.%d.%d", name, localIP[0], localIP[1],localIP[2],localIP[3]);
+  Serial.println(ipFull);
   client.println(ipFull);
   delay(150);
   client.stop();
@@ -51,7 +56,7 @@ void sendIP(){
 }
 
 void loop() {
-
+  serverCode();
 }
 
 void serverCode(){
@@ -67,10 +72,8 @@ void serverCode(){
         Serial.println("Request: " + request);
 
         // Send response back to the client
-        client.println("HTTP/1.1 200 OK");
-        client.println("Content-Type: text/html");
-        client.println();
-        client.println("<h1>Hello from Wemos Lolin Mini!</h1>");
+        client.println("200 OK");
+        
         client.println();
 
         delay(100); // Allow time for client to receive response
