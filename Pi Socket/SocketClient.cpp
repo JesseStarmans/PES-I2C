@@ -42,10 +42,10 @@ string SocketClient::receiveData() {
 	char buffer[1024] = "";
 	ssize_t bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 	if (bytesReceived < 0) {
-		cout<<"Error receiving data"<<endl;
+		str = "Error";
 	}
 	else if (bytesReceived == 0) {
-		cout<<"Server disconnected"<<endl;
+		str = "Disconnected";
 	}
 	else {
 		str.assign(buffer);
