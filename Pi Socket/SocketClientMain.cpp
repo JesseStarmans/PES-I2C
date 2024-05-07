@@ -8,5 +8,16 @@ int main(void) {
 	SocketClient client(8080, IP);
 	client.sendData("Test123");
 	string returning = client.receiveData();
-	cout<<"In de main: "<<returning<<endl;
+	
+	if (returning == "Error") {
+		cout<<"Error receiving data"<<endl;
+	}
+	else if (returning == "Disconnected") {
+		cout<<"Server disconnected"<<endl;
+	}
+	else {
+		cout<<"In de main: "<<returning<<endl;
+	}
+	
+	
 }
