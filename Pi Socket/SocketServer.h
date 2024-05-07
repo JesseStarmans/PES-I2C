@@ -1,12 +1,14 @@
 #include <iostream>
 #include <arpa/inet.h>
+#include <vector>
 
 using namespace std;
 
 class SocketServer {
 public: 
-	SocketServer(int, char*);
+	SocketServer(int, const char*); 
 	~SocketServer();
+	vector<string> setupWemosIP();
 	void listenForClients();
 	void sendData(const string&);
 	string receiveData();
@@ -15,5 +17,5 @@ private:
 	sockaddr_in serverAddress;
 	int clientSocket;
 	int port;
-	char* IP;
+	const char* IP;
 };
