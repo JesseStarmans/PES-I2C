@@ -1,0 +1,5 @@
+Ga naar de socket map (in terminal): cd /home/pigroepg/Documents/Socket
+
+Compileer de main (dus de SocketClientMain.cpp waar de SocketClient.cpp in zit): g++ -Wall -o SocketClientMain SocketClientMain.cpp SocketClient.cpp
+
+Run de SocketServer (in een nieuwe terminal voor de overzichtelijkheid): lxterminal -e "./SocketClientMain; read -p 'Druk op Enter om af te sluiten'"
