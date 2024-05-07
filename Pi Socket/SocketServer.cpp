@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <cstring>
 
-SocketServer::SocketServer(int poortNr, char* ipAddress) : port(poortNr), IP(ipAddress){
+SocketServer::SocketServer(int poortNr, const char* ipAddress) : port(poortNr), IP(ipAddress){
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (serverSocket == -1) {
 		cout<<"Error creating socket"<<endl;
@@ -25,6 +25,62 @@ SocketServer::SocketServer(int poortNr, char* ipAddress) : port(poortNr), IP(ipA
 
 SocketServer::~SocketServer() {
 	close(serverSocket);
+}
+
+vector<string> SocketServer::setupWemosIP() {
+	listen(serverSocket, 5);
+	
+	cout<<"Listening for Wemos setup"<<endl;
+	
+	int wemosAantal = 3;
+	
+	string wemos1;
+	string wemos2;
+	string wemos3;
+	
+	for (int i = 0; i < wemosAantal; i++) {
+		clientSocket = accept(serverSocket, nullptr, nullptr);
+		if (clientSocket < 0) {
+			cout<<"Error accepting Wemos connection"<<endl;
+			exit(EXIT_FAILURE);
+		}
+		
+		string nummer = receiveData();
+		//usleep(50000);
+		//string buffer = receiveData();
+		if (nummer == "Error") {
+			cout<<"Error receiving data. nummer: "<<nummer<<endl;
+			exit(EXIT_FAILURE);
+		}
+		else if(nummer == "Disconnected") {
+			cout<<"Client disconnected. nummer: "<<nummer<<endl;
+			exit(EXIT_FAILURE);
+		}
+		else {
+			string wemosSubString = "";
+			string IPSubString= "";
+			wemosSubString = nummer.substr(0, 6);
+			IPSubString = nummer.substr(7);
+			if (wemosSubString == "Wemos1") {
+				wemos1 = IPSubString;
+				cout<<"Wemos 1 ip: "<<wemos1<<endl;
+			}
+			else if (wemosSubString == "Wemos2") {
+				wemos2 = IPSubString;
+				cout<<"Wemos 2 ip: "<<wemos2<<endl;
+			}
+			else if (wemosSubString == "Wemos3") {
+				wemos3 = IPSubString;
+				cout<<"Wemos 3 ip: "<<wemos3<<endl;
+			}
+		}
+	}
+	vector<string> wemosIPs;
+	wemosIPs.push_back(wemos1);
+	wemosIPs.push_back(wemos2);
+	wemosIPs.push_back(wemos3);
+	
+	return wemosIPs;
 }
 
 void SocketServer::listenForClients() {
@@ -69,6 +125,7 @@ void SocketServer::listenForClients() {
 				cout <<"Succesvol data ontvangen"<<endl;
 			}
 		}
+		
 		
 		string test = "test";
 		sendData(test);
