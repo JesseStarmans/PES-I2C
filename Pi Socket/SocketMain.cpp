@@ -4,7 +4,7 @@
 #include <string>
 
 int main(void) {
-	char IP[16] = "145.52.127.169";
+	const char IP[16] = "145.52.127.169";
 	
 	SocketServer server(8080, IP);
 	
