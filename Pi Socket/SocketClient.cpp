@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <cstring>
 
-SocketClient::SocketClient(int poort, char* serverIPAddress) : port(poort), IP(serverIPAddress) {
+SocketClient::SocketClient(int poort, const char* serverIPAddress) : port(poort), IP(serverIPAddress) {
 	clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (clientSocket == -1) {
 		cout<<"Error maken clientSocket"<<endl;
