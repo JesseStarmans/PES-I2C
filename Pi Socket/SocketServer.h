@@ -10,8 +10,11 @@ public:
 	~SocketServer();
 	vector<string> setupWemosIP();
 	void listenForClients();
+	void serverListen();
+	void serverAccept();
 	void sendData(const string&);
 	string receiveData();
+	void closeClientConnection();
 private:
 	int serverSocket;
 	sockaddr_in serverAddress;
