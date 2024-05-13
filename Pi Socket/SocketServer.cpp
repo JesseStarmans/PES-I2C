@@ -28,9 +28,11 @@ SocketServer::~SocketServer() {
 }
 
 vector<string> SocketServer::setupWemosIP() {
-	listen(serverSocket, 5);
+	/*listen(serverSocket, 5);
 	
-	cout<<"Listening for Wemos setup"<<endl;
+	cout<<"Listening for Wemos setup"<<endl;*/
+	
+	serverListen();
 	
 	int wemosAantal = 3;
 	
@@ -39,15 +41,13 @@ vector<string> SocketServer::setupWemosIP() {
 	string wemos3;
 	
 	for (int i = 0; i < wemosAantal; i++) {
-		clientSocket = accept(serverSocket, nullptr, nullptr);
+		serverAccept();
+		
 		if (clientSocket < 0) {
-			cout<<"Error accepting Wemos connection"<<endl;
 			exit(EXIT_FAILURE);
 		}
 		
 		string nummer = receiveData();
-		//usleep(50000);
-		//string buffer = receiveData();
 		if (nummer == "Error") {
 			cout<<"Error receiving data. nummer: "<<nummer<<endl;
 			exit(EXIT_FAILURE);
@@ -83,17 +83,34 @@ vector<string> SocketServer::setupWemosIP() {
 	return wemosIPs;
 }
 
-void SocketServer::listenForClients() {
+void SocketServer::serverListen() {
 	listen(serverSocket, 5);
 	
 	cout<<"Server listening on port "<<port<<endl;
+}
+
+void SocketServer::serverAccept() {
+	clientSocket = accept(serverSocket, nullptr, nullptr);
+	if (clientSocket < 0) {
+		cout<<"Error accepting connection"<<endl;
+	}
+	
+}
+
+void SocketServer::listenForClients() {
+	/*listen(serverSocket, 5);
+	
+	cout<<"Server listening on port "<<port<<endl;*/
+	
+	serverListen();
 	
 	while(1) {
-		clientSocket = accept(serverSocket, nullptr, nullptr);
+		/*clientSocket = accept(serverSocket, nullptr, nullptr);
 		if (clientSocket < 0) {
 			cout<<"Error accepting connection"<<endl;
 			continue;
-		}
+		}*/
+		serverAccept();
 		
 		string received = receiveData();
 		if (received == "Error" ) {
@@ -130,7 +147,7 @@ void SocketServer::listenForClients() {
 		string test = "test";
 		sendData(test);
 		
-		close(clientSocket);
+		//close(clientSocket);
 	}
 }
 
@@ -159,4 +176,9 @@ string SocketServer::receiveData() {
 		cout<<"Received data from server: "<<str<<endl;
 	}
 	return str;
+}
+
+void SocketServer::closeClientConnection() {
+	close(clientSocket);
+	cout<<"Server has disconnected the clien"<<endl<<endl;
 }
