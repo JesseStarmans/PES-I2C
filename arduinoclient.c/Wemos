@@ -10,7 +10,7 @@
 
 const char* ssid = "NSELab";
 const char* password = "NSELabWiFi";
-const char* server = "groepg-1.local"; // IP address van de Pi 
+const char* server = "145.52.127.177"; // IP address van de Pi 
 const int port = 8080; // Port voor server
 
 MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
@@ -115,6 +115,13 @@ void sendRFIDData() {
   client.stop();
 }
 
+void resetNUIDBuffer() {
+    for (byte i = 0; i < 4; i++) {
+        nuidPICC[i] = 0;
+    }
+}
+
+
 void printHex(byte *buffer, byte bufferSize) {
   for (byte i = 0; i < bufferSize; i++) {
     Serial.print(buffer[i] < 0x10 ? " 0" : " ");
@@ -128,3 +135,4 @@ void printDec(byte *buffer, byte bufferSize) {
     Serial.print(buffer[i], DEC);
   }
 }
+
