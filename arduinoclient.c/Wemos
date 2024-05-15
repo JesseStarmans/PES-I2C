@@ -13,6 +13,7 @@ const char* password = "NSELabWiFi";
 const char* server = "145.52.127.177"; // IP address van de Pi 
 const int port = 8080; // Port voor server
 
+WiFiClient client;
 MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
 
 byte nuidPICC[4];
@@ -21,18 +22,26 @@ void setup() {
   Serial.begin(9600);
   SPI.begin(); 
   rfid.PCD_Init(); 
-
-  Serial.println(F("This code scans the MIFARE Classic NUID."));
-
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) { 
-    delay(100); 
+    delay(500); 
+    Serial.print(".");
   }
 
-  Serial.print("Connected! IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println("Connected to WiFi");
+  connectToServer();
 }
+
+void connectToServer() {
+  while (!client.connect(server, port)) {
+    Serial.println("Connecting to server...");
+    delay(1000);
+  }
+
+  Serial.println("Connected to server");
+}
+
 
 void loop() {
   if (!rfid.PICC_IsNewCardPresent())
@@ -83,11 +92,9 @@ void loop() {
 }
 
 void sendRFIDData() {
-  WiFiClient client;
-
-  if (!client.connect(server, port)) {
-    Serial.println("Connection to server failed"); //error als er geen connectie naar de server gemaakt kan worden
-    return;
+  if (!client.connected()) {
+    Serial.println("Disconnected from server, reconnecting...");
+    connectToServer();
   }
 
   String rfidData = "";
@@ -95,7 +102,6 @@ void sendRFIDData() {
     rfidData += String(rfid.uid.uidByte[i], HEX);
   }
 
-  // Maakt HTTP request aan om naar de server te sturen.
   client.println("POST /rfiddata HTTP/1.1");
   client.println("Host: " + String(server));
   client.println("Content-Type: text/plain");
@@ -105,15 +111,12 @@ void sendRFIDData() {
   
   Serial.println("RFID data sent to server: " + rfidData);
 
-  while (client.connected()) {
-    if (client.available()) {
-      String line = client.readStringUntil('\r');
-      Serial.println(line);
-    }
+  if (client.available()) {
+    String line = client.readStringUntil('\r');
+    Serial.println(line);
   }
-
-  client.stop();
 }
+
 
 void resetNUIDBuffer() {
     for (byte i = 0; i < 4; i++) {
@@ -135,4 +138,5 @@ void printDec(byte *buffer, byte bufferSize) {
     Serial.print(buffer[i], DEC);
   }
 }
+
 
