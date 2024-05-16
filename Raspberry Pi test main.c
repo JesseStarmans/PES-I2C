@@ -33,6 +33,7 @@ void writeTo(uint8_t startPos, uint8_t array[], int sizeArray, int fdSlave) {
 	}
 	write(fdSlave, toSend, sizeArray+sizeof(uint8_t)); 
 												//Stuur de toSend array over I2C naar de meegegeven slave
+	free(toSend);
 }
 
 /*Deze functie regelt het inlezen van 6 bytes, beginnend vanaf de startPositie, uit de I2C_REGISTERS op de microcontrollers*/
