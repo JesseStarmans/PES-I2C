@@ -46,7 +46,7 @@ void setup() {
   //sendIP("Wemos3");
   Serial.println("Waiting for request");
 
-  // Initialiseer elk MAX7219-apparaat
+  // Initialiseer elk MAX7219 bordje
   for (int x = 0; x &lt; numDevices; x++) {
     lc.shutdown(x, false);  // Haal de MAX72XX uit de energiebesparende modus
     lc.setIntensity(x, 8);  // Stel de helderheid in op gemiddeld niveau
@@ -55,7 +55,7 @@ void setup() {
 }
 
 void sendIP(String name) {
-  int ipDelen[4];  // Array voor het opslaan van de IP-adresdelen
+  int ipDelen[4];  // Array voor het opslaan van de IP-adressen
   int i = 0;
   String tempString = serverIPaddress;
   String bufferIP;
@@ -92,7 +92,7 @@ void loop() {
   }
   scrollMessage((const unsigned char *)receivedText);  // Scroll het ontvangen bericht
 }
-
+//hier onder worden de letters, cijfers en de karakters geinitializeerd zodat de goede led aangezet wordt per letter
 const unsigned char font5x7[] PROGMEM = { // Numerieke Font Matrix (Gerangschikt als 7x fongegevens + 1x kerning gegevens)
   B00000000,  //Space (Char 0x20)
   B00000000,
