@@ -1,49 +1,53 @@
-#include <ESP8266WiFi.h>
+#include <ESP8266WiFi.h> // library voor de raspberry pi
 #include <WiFiClient.h>
+
 #include <avr/pgmspace.h>
 #include <LedControl.h>
 
 const char* ssid = "NSELab";
 const char* password = "NSELabWiFi";
-const char* serverIPaddress = "145.52.127.169";
-const int port = 8080;
+const char* serverIPaddress = "145.52.127.184"; // IP address van de Pi 
+const int port = 8080; // Port voor server
+const int serverPort = 6060;
 
-const int numDevices = 4;
-const long scrollDelay = 50;
-unsigned long bufferLong[14] = {0};
+const int numDevices = 4;      // number of MAX7219s used
+const long scrollDelay = 50;   // adjust scrolling speed
+unsigned long bufferLong [14] = {0};
 
-LedControl lc = LedControl(12, 14, 15, 4);
+LedControl lc = LedControl(12, 14, 15, 4); //din cs
 
-char receivedText[50] = " dit WERKT ";
+//const unsigned char scrollText[] PROGMEM = {" dit WERKT "};
+char receivedText[50] = " HOI IK BEN MARIJN ";  // Buffer voor ontvangen tekst
 
-WiFiServer server(port);
+WiFiServer server(serverPort);
 
-void setup() {
+void setup() { 
   Serial.begin(115200);
 
   WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi...");
-  }
+   while (WiFi.status() != WL_CONNECTED) {
+     delay(1000);
+     Serial.println("Connecting to WiFi...");
+   }
 
   Serial.println("Connected to WiFi");
 
+  // start TCP server
   server.begin();
   Serial.println("Server started");
   Serial.print("IP: ");
   Serial.println(WiFi.localIP());
   
+  // sendIP functies bestaan om de server IP invulling te geven. Comment uit wat je niet gebruikt
   sendIP("Wemos1");
-  sendIP("Wemos2");
-  sendIP("Wemos3");
+  //sendIP("Wemos2");
+  //sendIP("Wemos3");
   Serial.println("Waiting for request");
-  
-  for (int x = 0; x < numDevices; x++) {
-    lc.shutdown(x, false);
-    lc.setIntensity(x, 8);
-    lc.clearDisplay(x);
+   for (int x = 0; x < numDevices; x++) {
+    lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
+    lc.setIntensity(x, 8);      // Set the brightness to default value
+    lc.clearDisplay(x);         // and clear the display
   }
 }
 
@@ -63,20 +67,28 @@ void sendIP(String name){
   if (client.connect(serverIP, port)){
     Serial.println("Connected to server");
   
-    IPAddress localIP = WiFi.localIP();
-    char ipFull[50] = "";
-    sprintf(ipFull, "%s %d.%d.%d.%d", name, localIP[0], localIP[1],localIP[2],localIP[3]);
-    Serial.println(ipFull);
-    client.println(ipFull);
-    delay(150);
-    client.stop();
-  } else {
+  // Send a message to the server
+  IPAddress localIP = WiFi.localIP();
+  char ipFull[50] = "";
+  sprintf(ipFull, "%s %d.%d.%d.%d", name, localIP[0], localIP[1],localIP[2],localIP[3]);
+  Serial.println(ipFull);
+  client.println(ipFull);
+  delay(150);
+  client.stop();
+  }
+  else {
     Serial.println("Unable to connect to server");
   }
 }
 
 void loop() {
   serverCode();
+  if (Serial.available() > 0) {
+    String inlees = Serial.readStringUntil('\n');
+    Serial.println("Ontvangen data: " + inlees);
+    clientCodeMetSend(inlees);
+  }
+  scrollMessage((const unsigned char *)receivedText);
 }
 const unsigned char font5x7 [] PROGMEM = {      //Numeric Font Matrix (Arranged as 7x font data + 1x kerning data)
   B00000000,  //Space (Char 0x20)
@@ -1049,18 +1061,20 @@ void serverCode(){
         String request = client.readStringUntil('\r');
         Serial.println("Request: " + request);
 
-        client.println("200 OK");
-        client.println();
+        String weerTeGevenTekst;
+        if (request.indexOf("lichtkrant:") != -1) {
+          weerTeGevenTekst = request.substring(12);
+        }
         
         delay(100);
 
         client.stop();
         Serial.println("Client disconnected");
 
-        request.toCharArray(receivedText, 50);
-        receivedText[request.length()] = '\0';
+        weerTeGevenTekst.toCharArray(receivedText, 50);
+        weerTeGevenTekst[weerTeGevenTekst.length()] = '\0';
 
-        scrollMessage((const unsigned char *)receivedText);
+        scrollMessage((const unsigned char *)weerTeGevenTekst);
       }
     }
   }
