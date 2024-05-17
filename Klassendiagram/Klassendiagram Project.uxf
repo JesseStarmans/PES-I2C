@@ -1,0 +1,962 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>399</x>
+      <y>280</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>Wemos Server
+--
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>371</x>
+      <y>476</y>
+      <w>175</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>SocketServer
+--
+- serverSocket : int
+- serverAddress : sockaddr_in
+- clientSocket : int
+- port : int
+- IP : const char*
+--
++ SocketServer(int, const char*)
++ setupWemosIP() : vector&lt;std::string&gt;
++ listenForClients() : void
++ serverListen() : void
++ serverAccept() : void
++ sendData(const std::string&amp;) : void
++ receiveData() : std::string
++ closeClientConnection() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>371</x>
+      <y>721</y>
+      <w>175</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>SocketClient
+--
+- clientSocket : int
+- serverAddress : sockaddr_in
+- port : int
+- IP : const char*
+--
++ SocketClient(int, const char*)
++ sendData(const std::string&amp;)
++ receiveData() : std::string</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>539</y>
+      <w>189</w>
+      <h>266</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;250.0;10.0;250.0;360.0;10.0;360.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>336</y>
+      <w>196</w>
+      <h>476</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;260.0;10.0;260.0;660.0;10.0;660.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>378</x>
+      <y>42</y>
+      <w>189</w>
+      <h>385</h>
+    </coordinates>
+    <panel_attributes>Wemos
+--
+bg=green</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>350</x>
+      <y>448</y>
+      <w>217</w>
+      <h>420</h>
+    </coordinates>
+    <panel_attributes>Raspberry Pi
+--
+bg=red</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>42</x>
+      <y>952</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>Microcontroler
+--
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>322</x>
+      <y>952</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>NUCLEO-L432KC
+--
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>182</x>
+      <y>1022</y>
+      <w>154</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;200.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>462</x>
+      <y>574</y>
+      <w>259</w>
+      <h>469</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=I2C verbinding</panel_attributes>
+    <additional_attributes>120.0;10.0;350.0;10.0;350.0;640.0;10.0;640.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>434</x>
+      <y>1218</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Buzzer
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>511</x>
+      <y>1218</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Servo
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>273</x>
+      <y>1295</y>
+      <w>77</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Temperatuur/
+Luchtvochtigheid
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>189</x>
+      <y>1295</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>CO2/brand
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>462</x>
+      <y>1176</y>
+      <w>98</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;120.0;50.0;10.0;50.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>1176</y>
+      <w>21</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>217</x>
+      <y>1162</y>
+      <w>112</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;70.0;90.0;70.0;180.0;140.0;180.0;140.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>217</x>
+      <y>1162</y>
+      <w>63</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;70.0;90.0;70.0;180.0;10.0;180.0;10.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>105</x>
+      <y>1148</y>
+      <w>252</w>
+      <h>203</h>
+    </coordinates>
+    <panel_attributes>Sensoren
+--
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>427</x>
+      <y>1162</y>
+      <w>238</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>Actuatoren
+--
+bg=Yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>35</x>
+      <y>931</y>
+      <w>441</w>
+      <h>161</h>
+    </coordinates>
+    <panel_attributes>Microcontroler
+--
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>945</x>
+      <y>420</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>RFID_Sensor
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>378</y>
+      <w>322</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;440.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>462</x>
+      <y>637</y>
+      <w>21</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>854</x>
+      <y>287</y>
+      <w>168</w>
+      <h>189</h>
+    </coordinates>
+    <panel_attributes>Sensoren
+--
+bg=orange</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>854</x>
+      <y>490</y>
+      <w>168</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>Actuatoren
+--
+bg=Yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>861</x>
+      <y>420</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Noodknop
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>112</x>
+      <y>1295</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Beweging
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>945</x>
+      <y>644</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>LED Matrix
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>854</x>
+      <y>602</y>
+      <w>140</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0;120.0;50.0;180.0;50.0;180.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLInterface</id>
+    <coordinates>
+      <x>847</x>
+      <y>595</y>
+      <w>14</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>140</y>
+      <w>322</w>
+      <h>483</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;400.0;10.0;400.0;670.0;440.0;670.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLInterface</id>
+    <coordinates>
+      <x>539</x>
+      <y>1162</y>
+      <w>14</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLInterface</id>
+    <coordinates>
+      <x>217</x>
+      <y>1148</y>
+      <w>14</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>140</x>
+      <y>1162</y>
+      <w>140</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;120.0;90.0;180.0;90.0;180.0;180.0;10.0;180.0;10.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>217</x>
+      <y>1078</y>
+      <w>189</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>250.0;10.0;250.0;50.0;10.0;50.0;10.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>385</x>
+      <y>1078</y>
+      <w>175</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;230.0;50.0;230.0;130.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>861</x>
+      <y>644</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>LED Strip
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>854</x>
+      <y>602</y>
+      <w>98</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0;120.0;50.0;60.0;50.0;60.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>273</x>
+      <y>1232</y>
+      <w>77</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Light Depen-
+dent Resistor
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>588</x>
+      <y>1218</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>LED
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>217</x>
+      <y>1162</y>
+      <w>112</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0;140.0;90.0;140.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>1176</y>
+      <w>98</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;120.0;50.0;120.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>189</x>
+      <y>1232</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Pressure
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>217</x>
+      <y>1162</y>
+      <w>21</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLInterface</id>
+    <coordinates>
+      <x>847</x>
+      <y>371</y>
+      <w>14</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>854</x>
+      <y>378</y>
+      <w>140</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0;120.0;50.0;180.0;50.0;180.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>112</x>
+      <y>1232</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Raam magneet
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>140</x>
+      <y>1162</y>
+      <w>98</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;120.0;90.0;10.0;90.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>112</x>
+      <y>1169</y>
+      <w>70</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>Grondvochtig-
+heid
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>140</x>
+      <y>1162</y>
+      <w>98</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>120.0;10.0;120.0;90.0;10.0;90.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLPackage</id>
+    <coordinates>
+      <x>770</x>
+      <y>707</y>
+      <w>644</w>
+      <h>651</h>
+    </coordinates>
+    <panel_attributes>QT GUI
+--
+bg=magenta</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>777</x>
+      <y>728</y>
+      <w>196</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>SocketClient
+--
+- socket : QTcpSocket*
+- IP : QString
+- poort : quint16
+- status : bool
+--
++ explicit SocketClient(QString, quint16, QObject*)
++ connectToServer() : void
++ disconnectFromtServer() : void
++ sendMessage(QString) : void
++ processMessage(const QString&amp;) : void
++ getStatus : bool
+- connected() : void
+- disconnected() : void
+- readyRead() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>511</y>
+      <w>252</w>
+      <h>294</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;280.0;10.0;280.0;400.0;340.0;400.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>777</x>
+      <y>952</y>
+      <w>196</w>
+      <h>203</h>
+    </coordinates>
+    <panel_attributes>MainWindow
+--
+- ui : UI::MainWindow*
+- deuren : vector&lt;shared_ptr&lt;Deur&gt;&gt;
+- buttons : vector&lt;QPushButton*&gt;
+- lichtkrantTekst : QLineEdit*
+- lichtkrantWeergave : QLabel*
+- client : SocketClient*
+- server : SocketServer*
+--
++ MainWindow(QWidget*)
++ paintEvent(QPaintEvent*) : void
+- handleVoordeur() : void
+- handleDeur1() : void
+- handleDeur2() : void
+- handleInvoerTekst() : void
+- handleSocketVoordeur(bool) : void
+- handleSocketDeur1(bool) : void
+- handleSocketDeur2(bool) : void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>854</x>
+      <y>889</y>
+      <w>21</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1134</x>
+      <y>945</y>
+      <w>147</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>Deur
+--
+- status : bool
+- x_coordinaat : int
+- y_coordinaat : int
+- lengte : unsinged int
+--
++ Deur(int, int, unsigned int)
++ open() : void
++ sluit() : void
+/+ teken(QPaintDevice*)/
++ isDeurOpen() : bool
++ deurLengte() : unsinged int
++ coordinaten() : pair&lt;int,int&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>966</x>
+      <y>1008</y>
+      <w>182</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;240.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1001</x>
+      <y>1218</y>
+      <w>196</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>Draaideur
+--
+- liggend : bool
+- rechtsom : bool
+--
++ Draaideur(int, int, unsinged int, bool, bool)
++ teken(QPaintDevice*) : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1211</x>
+      <y>1218</y>
+      <w>196</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>Schuifdeur
+--
+
+--
++ Schuifdeur(int, int, unsinged int)
++ teken(QPaintDevice*) : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1197</x>
+      <y>1085</y>
+      <w>126</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0;160.0;100.0;160.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1092</x>
+      <y>1085</y>
+      <w>126</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>160.0;10.0;160.0;100.0;10.0;100.0;10.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>854</x>
+      <y>1148</y>
+      <w>21</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>777</x>
+      <y>1211</y>
+      <w>196</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>SocketServer
+--
+- clients : QList&lt;QTcpSocket*&gt;
+- IP : QString
+- poort : quint16
+--
++ explicit SocketServer(QObject*)
++ startServer() : void
++ stopServer() : void
++ sendMessageToClients(const QString&amp;) : void
++ checkReceived(QString) : void
+- handleNewConnection() : void
+- readyRead() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>805</y>
+      <w>252</w>
+      <h>504</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;290.0;10.0;290.0;700.0;340.0;700.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>399</x>
+      <y>70</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>Wemos Client
+--
+
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>462</x>
+      <y>196</y>
+      <w>21</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>217</x>
+      <y>336</y>
+      <w>70</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>WiFiServer</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>280</x>
+      <y>343</y>
+      <w>133</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>217</x>
+      <y>126</y>
+      <w>70</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>WiFiClient</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>280</x>
+      <y>133</y>
+      <w>133</w>
+      <h>21</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;170.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>854</x>
+      <y>378</y>
+      <w>98</w>
+      <h>56</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;120.0;10.0;120.0;50.0;60.0;50.0;60.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>539</x>
+      <y>154</y>
+      <w>217</w>
+      <h>469</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;290.0;10.0;290.0;650.0;10.0;650.0</additional_attributes>
+  </element>
+</diagram>
