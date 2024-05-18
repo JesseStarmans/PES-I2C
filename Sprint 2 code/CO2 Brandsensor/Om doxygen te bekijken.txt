@@ -1,0 +1,2 @@
+Om de doxygen te bekijken kunt u naar deze plek in deze github: PES-I2C/BewegingsSensor/Doxygen
+Wij hebben deze code hier gezet om alles op 1 plek te zetten, maar de doxygen bestanden van deze code staan dus op een andere plek (daar kwam de main.c origineel ook vandaan)
