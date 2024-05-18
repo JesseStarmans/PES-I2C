@@ -31,10 +31,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define DEBOUNCE_DELAY_MS 20 // Adjust this value as needed
 #define sensorAddress 0x58 //I2C adres sensor
-#define MAX_DUTY_CYCLE  100  // Maximum duty cycle percentage
-#define MIN_DUTY_CYCLE  10   // Minimum duty cycle percentage
+#define MAX_DUTY_CYCLE  100  // Maximum duty cycle
+#define MIN_DUTY_CYCLE  10   // Minimum duty cycle
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -45,6 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c3;
 
+TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim16;
 
@@ -62,6 +62,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_I2C3_Init(void);
 static void MX_TIM16_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -103,6 +104,7 @@ int main(void)
   MX_TIM2_Init();
   MX_I2C3_Init();
   MX_TIM16_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -113,29 +115,30 @@ int main(void)
     ******************************************************************************
     * @brief      While-loop
     *
-    * @details    In de while wordt de waarde van de sensor uitgelezen en wordt de LED aangezet
-    * 			  als de sensor waarde 1 is en hij aanstaat. Ook wordt dan de Timer van 5 seconde
-    * 			  gestart.
+    * @details    In de while wordt d.m.v. I2C een commando over de lijn gestuurd om de data te meten.
+    * 			  Daarna wordt er 20 ms gewacht op een response en wordt de data uitgelezen
+    *             Dit wordt gecheckt door CRC waarna het in een if-statement komt.
     *
     * @retval     uint8_t sensorValue leest de waarde van de Bewegingssensor
     ******************************************************************************
     */
-  HAL_I2C_Master_Transmit(&hi2c3, sensorAddress << 1, (uint8_t[]) {0x20, 0x03}, 2, HAL_MAX_DELAY);
+  
+  HAL_I2C_Master_Transmit(&hi2c3, sensorAddress << 1, (uint8_t[]) {0x20, 0x03}, 2, HAL_MAX_DELAY); // Om de SGP30 sensor te initialiseren
   while (1) {
 
 
       char buf[50];
       // Read data from SGP30 sensor
-      uint8_t data[6]; // Data buffer to store sensor readings
+      uint8_t data[6]; // buffer om de data in op te slaan
 
       // Request measurement
-      uint8_t command[] = {0x20, 0x08}; // Command for reading measurement data
+      uint8_t command[] = {0x20, 0x08}; // Command voor het lezen van de data
       HAL_I2C_Master_Transmit(&hi2c3, sensorAddress << 1, command, sizeof(command), HAL_MAX_DELAY);
 
-      // Wait for measurement to complete
+      // Delay voor de meting
       HAL_Delay(20);
 
-      // Read measurement data
+      // lees de gemeten data
       HAL_I2C_Master_Receive(&hi2c3, (sensorAddress << 1) | 0x01, data, sizeof(data), HAL_MAX_DELAY);
 
       // Process data to get CO2 and TVOC
@@ -145,11 +148,10 @@ int main(void)
       // Print data to Serial port (UART)
       sprintf(buf, "CO2: %d TVOC: %d \r\n", CO2, TVOC);
       HAL_UART_Transmit(&huart2, (uint8_t*)buf, strlen(buf), HAL_MAX_DELAY);
-      //HAL_Delay(900);
-	  int alarm = 0;
-      if(CO2>600 || alarm){
-    	  alarm = 1;
-    	  buzzer_aan();
+	  int uit = 0;
+      if(CO2>600 || uit){
+    	  //alarm = 1;
+          buzzer_aan();
       }
 
 
@@ -269,6 +271,53 @@ static void MX_I2C3_Init(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 4800-1;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 1250;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -332,7 +381,7 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 1 */
   htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 2-1;
+  htim16.Init.Prescaler = 10-1;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -469,60 +518,66 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-//void PWM_Buzzer_SetDutyCycle(uint32_t dutyCycle) {
-//    uint32_t pulse = (__HAL_TIM_GetAutoreload(&htim16) * dutyCycle) / 100;
-//    __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, pulse);
-//}
 /**
   ******************************************************************************
   * @brief      Zet de buzzer aan.
   *
-  * @details    Deze functie zet de buzzer aan en zorgt ervoor dat het van hard naar zacht gaat
-  * 			om de 250 ms hier moet nog wel een timer aan worden gekoppeld om niet het gehele 
-  * 			systeem 250 ms stil te zetten.
+  * @details    Deze functie zet de buzzer aan en start een timer van 250 ms om dan
+  * 			om deze periode van 250 ms de frequentie te veranderen van de buzzer.
   *
-  * @retval     
+  * @retval     int   Geeft aan of de sensor is uitgeschakeld (0).
   ******************************************************************************
   */
 void buzzer_aan() {
-	HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+	  HAL_TIM_Base_Start_IT(&htim1);
+	  HAL_TIM_PWM_Start(&htim16, TIM_CHANNEL_1);
+	  uint32_t soft_pulse = (__HAL_TIM_GetAutoreload(&htim16) * 10) / 100;
+	  int freq = 3200000 / 400;
+	  __HAL_TIM_SET_AUTORELOAD(&htim16,freq - 1);
+	  __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, soft_pulse);
 
-	    // initiële frequentie is 400
-	    uint32_t initial_freq = 400; // Initial frequency in Hz
-
-	    // hier worden de duty cycles voor een zachte en hard pulse gedefineerd
-	    uint32_t soft_pulse = (__HAL_TIM_GetAutoreload(&htim16) * 10) / 100; // 10% duty cycle for soft tone
-	    uint32_t hard_pulse = (__HAL_TIM_GetAutoreload(&htim16) * 100) / 100; // 100% duty cycle for hard tone
-
-	    // Calculate periods for initial and final frequencies
-	    uint32_t initial_period = HAL_RCC_GetHCLKFreq() / initial_freq;
-
-	    // Start with initial frequency and soft tone
-	    __HAL_TIM_SET_AUTORELOAD(&htim16, initial_period - 1);
-	    __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, soft_pulse);
-	    HAL_Delay(250);//moet er nog uitgehaald worden door een timer
-
-	    // Deze while zorgt voor het alarm geluid van de buzzer moet nog een variabele aan toegevoegd worden
-	    // die ervoor zorgt dat het alarm uitgaat (bijv vals alarm)
-	    while (1) {
-
-	        // Change to hard tone
-	        __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, hard_pulse);
-	        HAL_Delay(250);//moet er nog uitgehaald worden door een timer
-
-	        // Update frequency and period
-	    	if(initial_freq == 100){
-	    		initial_freq += 300;
-	    	}
-	    	else initial_freq -= 300;
-	        initial_period = HAL_RCC_GetHCLKFreq() / initial_freq;
-	        __HAL_TIM_SET_AUTORELOAD(&htim16, initial_period - 1);
-
-	        // Change to soft tone
-	        __HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, soft_pulse);
-	        HAL_Delay(250);//moet er nog uitgehaald worden door een timer
-	    }
 }
+
+
+
+
+
+/**
+  ******************************************************************************
+  * @brief      Callback-functie voor periode-afgelopen gebeurtenissen van de timer.
+  *
+  * @details    Deze functie wordt aangeroepen wanneer de periode van de timer is verstreken.
+  *             Het veranderd de frequentie en hardheid van de buzzer naar aanleiding van de status hiervan.
+  *
+  * @param[in]  htim   Handle van de timer waarvoor de gebeurtenis is opgetreden.
+  ******************************************************************************
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+
+    if (htim == &htim1){
+    	int freq = __HAL_TIM_GetAutoreload(&htim16);
+    	uint32_t soft_pulse = (__HAL_TIM_GetAutoreload(&htim16) * 10) / 100; // 10% duty cycle for soft tone
+    	uint32_t hard_pulse = (__HAL_TIM_GetAutoreload(&htim16) * 100) / 100; //100% duty cycle for hard tone
+
+    	if (freq <= (3200000 /400)-1){
+    		uint32_t freq1 = 3200000 / 100;
+    		__HAL_TIM_SET_AUTORELOAD(&htim16, (freq1 - 1));
+    		__HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, hard_pulse);
+    	}
+
+    	else{
+    		uint32_t freq2 = 3200000 / 400;
+    		__HAL_TIM_SET_AUTORELOAD(&htim16, (freq2 - 1));
+    		__HAL_TIM_SET_COMPARE(&htim16, TIM_CHANNEL_1, soft_pulse);
+    	}
+
+    	__HAL_TIM_SET_COUNTER(&htim1, 0);
+    	HAL_TIM_Base_Start_IT(&htim1);
+    }
+}
+
+
 /* USER CODE END 4 */
 
 /**
@@ -556,3 +611,4 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
