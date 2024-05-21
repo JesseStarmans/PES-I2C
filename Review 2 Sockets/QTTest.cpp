@@ -3,6 +3,9 @@
 
 #include <string>
 
+#define  PI_B "145.52.127.177"
+#define MY_IP "145.52.127.184"
+
 vector<string> IPsWemos;
 
 int checkReceived(std::string received) {
@@ -95,16 +98,19 @@ int checkReceived(std::string received) {
 			return 0x56;
 		}
 		else if (received == "I2C Pi sturen") {
-   		 	const char IP[16] = "145.52.127.177";
-			SocketClient client(7070, IP);
+			SocketClient client(7070, PI_B);
 			client.sendData("Wemos Pi sturen");
 			return 0x70;
-		}
+		} // Temperatuur logica
 		else if (received == "Check Temp") {
-			const char IP[16] = "145.52.127.177";
-			SocketClient client(7070, IP);
+			SocketClient client(7070, PI_B);
 			client.sendData("Check Temp");
-			return 0x99;
+			return 0x21;
+		} 
+		else if (received.find("Temperatuur") != std::string::npos) {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			return 0x22;
 		}
 		else if (received == "I2C Pi return") {
 			return 0x71;
@@ -116,12 +122,10 @@ int checkReceived(std::string received) {
 	}
 }
 
-int main(void) {
-	const char IP[16] = "145.52.127.184";
+int main(void) {	
+	SocketServer server(8080, MY_IP);
 	
-	SocketServer server(8080, IP);
-	
-	IPsWemos = server.setupWemosIP();
+	//IPsWemos = server.setupWemosIP();
 	// {
     //     SocketClient client(8080, IPsWemos[0].c_str());
         
@@ -133,8 +137,11 @@ int main(void) {
 	/*Hieronder de constant runnende server*/
 	while (true) {
 		server.serverAccept();
+	
 		string received = server.receiveData();
+		
 		int respons = checkReceived(received);
+		
 		if (respons >= 0x40 && respons < 0x50) {
 			cout<<"UI event ontvangen"<<endl;
 		}
@@ -147,9 +154,16 @@ int main(void) {
 		else if (respons == 0x80) {
 			cout<<"Lichtkrant data verstuurd"<<endl;
 		}
+		else if (respons == 0x21) {
+			cout << "Vraag temperatuur op" << endl;
+		}
+		else if (respons == 0x22) {
+			cout << "Set Temperatuur" << endl;
+		}
 		else {
 			cout<<"Gestuurd"<<endl;
 		}
+		
 		server.closeClientConnection();
 	}
 }
