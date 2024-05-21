@@ -193,13 +193,13 @@ void setColor(int redValue, int greenValue,  int blueValue) {
 void ledaansturen(){
   waarde = analogRead(A0);
   Serial.println(waarde); 
-  if(waarde < 300){
+  if(waarde < 400){
     setColor(255, 0, 0); // Red Color
   }
-  else if(waarde > 300 && waarde < 500){
+  else if(waarde > 400 && waarde < 600){
     setColor(128, 128, 0); // Red Color
   }
-  else if(waarde > 500 && waarde < 700){
+  else if(waarde > 600 && waarde < 700){
     setColor(0, 255, 0); // Red Color
   }
  
