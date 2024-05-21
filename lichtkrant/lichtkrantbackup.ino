@@ -17,7 +17,7 @@ unsigned long bufferLong [14] = {0};
 LedControl lc = LedControl(12, 14, 15, 4); //din cs
 
 //const unsigned char scrollText[] PROGMEM = {" dit WERKT "};
-char receivedText[50] = " HOI IK BEN MARIJN ";  // Buffer voor ontvangen tekst
+char receivedText[50] = " $ 35,- ";  // Buffer voor ontvangen tekst
 
 WiFiServer server(serverPort);
 
@@ -41,8 +41,8 @@ void setup() {
   
   // sendIP functies bestaan om de server IP invulling te geven. Comment uit wat je niet gebruikt
   sendIP("Wemos1");
-  //sendIP("Wemos2");
-  //sendIP("Wemos3");
+  sendIP("Wemos2");
+  sendIP("Wemos3");
   Serial.println("Waiting for request");
    for (int x = 0; x < numDevices; x++) {
     lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
@@ -131,13 +131,13 @@ const unsigned char font5x7 [] PROGMEM = {      //Numeric Font Matrix (Arranged 
   6,
 
 
-  B00100000,  //$
-  B01111000,
-  B10100000,
-  B01110000,
-  B00101000,
-  B11110000,
-  B00100000,
+  B00111110,
+B01000000,
+B11111100,
+B01000000,
+B11111100,
+B01000000,
+B00111110,
   6,
 
 
@@ -1048,7 +1048,9 @@ const unsigned char font5x7 [] PROGMEM = {      //Numeric Font Matrix (Arranged 
   B00000000,
   B00000000,
   B00000000,
-  5
+  5,
+
+
 
 };
 void serverCode(){
