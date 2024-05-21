@@ -112,7 +112,17 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
-		if (I2C_REGISTERS[1] != 0){
+		/*Set gewilde temperatuur*/
+		if (I2C_REGISTERS[1] == 115 && I2C_REGISTERS[2] == 101 && I2C_REGISTERS[3] == 116){
+			requestTemp = I2C_REGISTERS[4];
+			I2C_REGISTERS[0] = 1;
+			HAL_Delay(100);
+			for(int i = 0; i < 10; i++){
+				I2C_REGISTERS[i] = 0;
+			}
+		}
+		/*Vraag temperatuur op*/
+		else if (I2C_REGISTERS[1] != 0){
 			//HAL_UART_Transmit(&huart2, (uint8_t*)"I2C test", 9, 100);
 			char buf[50];
 			// Read data from SHT3x sensor
@@ -140,16 +150,26 @@ int main(void)
 			}
 			else {verwarmingStatus = 1;}
 			// Print data to Serial port (uart)
-			sprintf(buf, "%.1lfC Luchtvochtigheid: %.1lf VerwarmingStatus: %d \r\n", temperature, humidity, verwarmingStatus);
+			sprintf(buf, "%.2lfC Luchtvochtigheid: %.1lf VerwarmingStatus: %d \r\n", temperature, humidity, verwarmingStatus);
 			HAL_UART_Transmit(&huart2, (uint8_t*)buf, strlen(buf), 100);
 
 			for(int i = 0; i < 10; i++){
-							I2C_REGISTERS[i] = 0;
+				I2C_REGISTERS[i] = 0;
 			}
+			// Neem het gehele deel van de float
+			uint8_t intPart = (uint8_t)temperature;
 
-			I2C_REGISTERS[1] = (uint8_t)temperature;
+			// Neem het decimale deel van de float
+			float decimal = temperature - (float)(intPart);
+
+			// Converteer het decimale deel naar een percentage (bijv. 0.56 wordt 56)
+			uint8_t decPart = (uint8_t)(decimal * 100);
 
 
+			I2C_REGISTERS[1] = (uint8_t)intPart;
+			I2C_REGISTERS[2] = (uint8_t)decPart;
+			I2C_REGISTERS[3] = (uint8_t)humidity;
+			I2C_REGISTERS[4] = verwarmingStatus;
 			I2C_REGISTERS[0] = 1;
 
 			HAL_Delay(100);
