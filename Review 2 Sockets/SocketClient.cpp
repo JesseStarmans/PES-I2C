@@ -1,3 +1,19 @@
+/*!
+	@file SocketClient.cpp
+	@date 24 May 2024
+	@author Jesse Starmans
+	@brief CPP file voor de SocketClient klasse.
+
+	De implementatie van de SocketClient klasse.
+
+	Deze klasse maakt het mogelijk om een verbinding aan te gaan met een socket server, om vervolgens data te kunnen versturen en ontvangen.
+
+	Created on 7 May 2024
+	by Jesse Starmans
+	Modified on 24 May 2024
+	by Jesse Starmans
+*/
+
 #include "SocketClient.h"
 
 #include <cstdlib>
@@ -6,6 +22,14 @@
 #include <unistd.h>
 #include <cstring>
 
+/*!
+	@brief Constructor voor de SocketClient klasse
+
+	Deze constructor maakt een SocketClient object aan en maakt de socket client aan.
+
+	@param poort De poort van de socket server waarnaar verbonden moet worden.
+	@param serverIPAddress Het IP adres van de socket server waarnaar verbonden moet worden.
+*/
 SocketClient::SocketClient(int poort, const char* serverIPAddress) : port(poort), IP(serverIPAddress) {
 	clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (clientSocket == -1) {
@@ -23,10 +47,22 @@ SocketClient::SocketClient(int poort, const char* serverIPAddress) : port(poort)
 	}
 }
 
+/*!
+	@brief Destructor voor de SocketClient klasse
+
+	Deze destructor sluit de client verbinding naar de server.
+*/
 SocketClient::~SocketClient() {
 	close(clientSocket);
 }
 
+/*!
+	@brief Verstuurt een string naar de socket server.
+
+	Deze functie stuurt een string naar de socket server.
+
+	@param message De string die verstuurt moet worden naar de socket server.
+*/
 void SocketClient::sendData(const string& message) {
 	if (send(clientSocket, message.c_str(), message.length(), 0) < 0) {
 		cout<<"Error sending data"<<endl;
@@ -37,6 +73,13 @@ void SocketClient::sendData(const string& message) {
 	}
 }
 
+/*!
+	@brief Ontvangt een string terug van de socket server.
+
+	Deze functie ontvangt een string die door de socket server is gestuurd en returnt deze string.
+
+	@return Een string met de ontvangen data.
+*/
 string SocketClient::receiveData() {
 	string str = "";
 	char buffer[1024] = "";
