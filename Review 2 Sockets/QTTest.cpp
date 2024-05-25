@@ -1,13 +1,48 @@
+/*!
+    @file QTTest.cpp
+    @date 24 May 2024
+    @author Jesse Starmans
+    @brief Main CPP file voor de Wemos Raspberry Pi.
+
+    Dit is de main voor de Raspberry Pi die verbonden is over sockets aan de Wemos bordjes en de QT beheerders-interface. \n
+    Deze main maakt gebruik van de SocketServer en SocketClient klasses voor het verbinden met de andere Raspberry Pi, de Wemos bordjes en de QT beheerdersinterface.
+*/
 #include "SocketServer.h"
 #include "SocketClient.h"
 
 #include <string>
 
+/*!
+	@def PI_B
+	@brief Definieert het IP adres van de andere Raspberry Pi.
+
+	Deze macro definieert het IP adres van de I2C Raspberry Pi.
+*/
 #define  PI_B "145.52.127.177"
+
+/*!
+	@def MY_IP
+	@brief Definieert het IP adres van deze Raspberry Pi.
+
+	Deze macro definieert het IP adres van deze Raspberry Pi die verbonden is aan de Wemos bordjes en de QT beheerdersinterface.
+*/
 #define MY_IP "145.52.127.184"
 
-vector<string> IPsWemos;
+/*!
+	@def MY_PORT
+	@brief Definieert de poort van de socket server op deze Raspberry Pi.
 
+	Deze macro definieert de poort waar de socket server op deze Raspberry Pi naar moet gaan luisteren. Deze poort moet gebruikt worden door de socket clients die een verbinding willen opzetten met deze socket server. 
+*/
+#define MY_PORT 8080
+
+vector<string> IPsWemos;		/*!< De vector met string waar de IP addressen van de Wemos borjes in opgeslagen worden.*/
+
+/*!
+	@brief Check of de meegegeven string een bekende commando is.
+
+	Deze functie checkt of de meegegeven string een bekend commando is. Als dit zo is, wordt de juiste afhandeling van deze commando aangeroepen.
+*/
 int checkReceived(std::string received) {
 	if (received == "Error" ) {
 		cout<<"Error receiving data"<<endl;
@@ -122,12 +157,17 @@ int checkReceived(std::string received) {
 	}
 }
 
+/*!
+	@brief De main voor het programma runnen.
+
+	Dit is de main die het volledige programma laat lopen.
+*/
 int main(void) {	
-	SocketServer server(8080, MY_IP);
+	SocketServer server(MY_PORT, MY_IP);
 	
 	//IPsWemos = server.setupWemosIP();
 	// {
-    //     SocketClient client(8080, IPsWemos[0].c_str());
+    //     SocketClient client(MY_PORT, IPsWemos[0].c_str());
         
     //     client.sendData("Test123");
     //     string returning = client.receiveData();
