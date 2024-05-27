@@ -1,5 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QDir>
+#include <QNetworkInterface>
+#include <QDebug>
+#include <QPainter>
 
 #include "draaideur.h"
 #include "schuifdeur.h"
@@ -7,9 +11,16 @@
 #include "socketclient.h"
 #include "socketserver.h"
 #include "indicator.h"
-#include <QNetworkInterface>
 
-#include <QPainter>
+void MainWindow::initImage(){
+    /*------------- Setup for automatisch image (plattegrond) invoer -------------*/
+    QDir executableDir(QCoreApplication::applicationDirPath());
+    executableDir.cdUp();
+    executableDir.cdUp();
+    executableDir.cdUp();
+    imagePath = executableDir.filePath("Lege plattegrond appartementen.png");
+    qDebug() << "Path: " << imagePath;
+}
 
 QString init(){
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
@@ -30,10 +41,12 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     resize(1300,800);
+
+    /* Setup voor Image(plattegrond) */
+    initImage();
+
     /* Indicatoren maken */
     indicatoren.push_back(make_shared<Indicator>(250,200,false));
-
-
 
     /*Deuren aanmaken en in een vector stoppen*/
     deuren.push_back(make_shared<Schuifdeur>(1055, 440, 210));
@@ -67,6 +80,8 @@ MainWindow::MainWindow(QWidget *parent)
     lichtkrantWeergave = new QLabel(this);
     lichtkrantWeergave->setGeometry(850, 730, 120, 22);
 
+
+    /* Server logica */
     client = new SocketClient("145.52.127.184", 8080);
     IP = init();
     if(IP != ""){
@@ -76,16 +91,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(server, &SocketServer::Voordeur, this, &MainWindow::handleSocketVoordeur);
     connect(server, &SocketServer::Deur1, this, &MainWindow::handleSocketDeur1);
     connect(server, &SocketServer::Deur2, this, &MainWindow::handleSocketDeur2);
+    connect(server, &SocketServer::Temperatuur, this, &MainWindow::handleSocketTempSensor);
+    connect(server, &SocketServer::Co2, this, &MainWindow::handleSocketCo2);
 }
 
 void MainWindow::paintEvent(QPaintEvent *event){
 
     QPainter painter(this);
-    //QImage image("C:/Users/sanne/Documents/School/Semester 4/Project/GUI/gebouw/UI/Lege plattegrond appartementen.png");
-    QImage image("C:/Users/gdjon/OneDrive/Bureaublad/gebouw/UI/Lege plattegrond appartementen.png");
+    //QImage image("C:/Users/sanne/Documents/School/Semester 4/Project/GUI/gebouw/UI/Lege plattegrond appartementen.png"); // niet meer nodig, mag weg als regel hieronder werkt (moet getest worden).
+    QImage image(imagePath); // Automatisch path herkenning image (zie initImage())
+
     painter.drawImage(10,10,image);
 
-    for (int i = 0; i < deuren.size(); i++) {
+    for (int i = 0; i < (int)deuren.size(); i++) {
         deuren.at(i)->teken(this);
     }
     // loop over alle indicatoren
@@ -153,6 +171,7 @@ void MainWindow::handleSocketVoordeur(bool isOpen) {
     }
     update();
 }
+
 void MainWindow::handleSocketDeur1(bool isOpen) {
     if (isOpen == OPEN) {
         deuren.at(1)->open();
@@ -162,6 +181,7 @@ void MainWindow::handleSocketDeur1(bool isOpen) {
     }
     update();
 }
+
 void MainWindow::handleSocketDeur2(bool isOpen) {
     if (isOpen == OPEN) {
         deuren.at(2)->open();
@@ -171,21 +191,31 @@ void MainWindow::handleSocketDeur2(bool isOpen) {
     }
     update();
 }
-void MainWindow::handleSocketTempSensor(bool isOn){
-    if (isOn == true){
-        indicatoren.at(0)->setOpen();
-    }
-    else{
-        indicatoren.at(0)->setOpen();
-    }
+
+void MainWindow::handleSocketTempSensor(std::string msg){
+    // hier moet dan juiste msg splitsing voor temperatuur(float), luchtvochtigheid en verwarming status
+    temperatuur = SocketServer::toInt(msg.substr(0,0));
+    temperatuur += (SocketServer::toInt(msg.substr(1,1))/100);
+    luchtvochtigheid = SocketServer::toInt(msg.substr(2,2));
+    verwarming = SocketServer::toInt(msg.substr(3,3));
+    // geen idee of dit werkt. Is wat ik nog kan herrineren. Dinsdag checken of het werkt.
+}
+
+void MainWindow::handleSocketCo2(bool isOn){
+    Co2Level = isOn;
 }
 
 MainWindow::~MainWindow() {
     delete ui;
-    for (int i = 0; i < buttons.size(); i++) {
+    for (int i = 0; i < (int)buttons.size(); i++) {
         delete(buttons.at(i));
     }
     client->disconnectFromServer();
+
+    // Glenn: added want memoryleak (27-05)
+    delete lichtkrantTekst;
+    delete lichtkrantWeergave;
     delete client;
+    delete server;
 }
 

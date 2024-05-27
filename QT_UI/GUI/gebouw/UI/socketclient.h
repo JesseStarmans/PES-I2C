@@ -8,7 +8,7 @@ class SocketClient : public QObject
     Q_OBJECT
 public:
     explicit SocketClient(QString, quint16, QObject *parent = nullptr);
-    ~SocketClient();
+    virtual ~SocketClient();
 
 public slots:
     void connectToServer();

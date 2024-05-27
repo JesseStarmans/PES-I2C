@@ -40,16 +40,31 @@ private slots:
     void handleSocketDeur1(bool);
     void handleSocketDeur2(bool);
     // Temperatuur sensor update server
-    void handleSocketTempSensor(bool);
+    void handleSocketTempSensor(std::string);
+    // Co2 sensor
+    void handleSocketCo2(bool);
+
 private:
+    void initImage();
+
     Ui::MainWindow *ui;
     std::vector<std::shared_ptr<Deur>> deuren;
     std::vector<QPushButton*> buttons;
     std::vector<std::shared_ptr<Indicator>> indicatoren;
     QLineEdit* lichtkrantTekst;
     QLabel* lichtkrantWeergave;
+
+    // Socket Server/Client
     SocketClient* client;
     SocketServer* server;
+
+    // Automatisering
     QString IP;
+    QString imagePath;
+
+    // Gekregen waardes
+    bool verwarming;
+    double temperatuur;
+    int luchtvochtigheid, Co2Level;
 };
 #endif // MAINWINDOW_H

@@ -11,7 +11,7 @@ class Deur
 {
 public:
     Deur(int, int, unsigned int);
-    ~Deur();
+    virtual ~Deur();
     void open();
     void sluit();
     virtual void teken(QPaintDevice *) = 0;

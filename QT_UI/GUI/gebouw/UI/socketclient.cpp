@@ -12,6 +12,7 @@ SocketClient::SocketClient(QString host, quint16 port, QObject *parent) : QObjec
 
 SocketClient::~SocketClient() {
     disconnectFromServer();
+    delete(socket); // Glenn: added want memory leak (27-05)
 }
 
 void SocketClient::connectToServer()

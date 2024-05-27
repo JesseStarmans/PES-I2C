@@ -9,13 +9,14 @@ class SocketServer : public QTcpServer
     Q_OBJECT
 public:
     explicit SocketServer(QString, quint16,QObject *parent = nullptr);
-    ~SocketServer();
+    virtual ~SocketServer();
+    static int toInt(const std::string&);
 
 public slots:
     void startServer();
     void stopServer();
     void sendMessageToClients(const QString& message);
-    void checkReceived(QString);
+    void checkReceived(const QString&);
 
 private slots:
     void handleNewConnection();
@@ -25,6 +26,8 @@ signals:
     void Voordeur(bool);
     void Deur1(bool);
     void Deur2(bool);
+    void Temperatuur(std::string&);
+    void Co2(bool);
 
 private:
     QList<QTcpSocket*> clients;
