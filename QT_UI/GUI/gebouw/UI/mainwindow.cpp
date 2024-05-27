@@ -6,8 +6,23 @@
 #include "defines.h"
 #include "socketclient.h"
 #include "socketserver.h"
+#include "indicator.h"
+#include <QNetworkInterface>
 
 #include <QPainter>
+
+QString init(){
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+
+    for(int nIter=0; nIter<list.count(); nIter++){
+        if(!list[nIter].isLoopback()){
+            if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol ){
+                return list[nIter].toString();
+            }
+        }
+    }
+    return "";
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,6 +30,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     resize(1300,800);
+    /* Indicatoren maken */
+    indicatoren.push_back(make_shared<Indicator>(250,200,false));
+
+
 
     /*Deuren aanmaken en in een vector stoppen*/
     deuren.push_back(make_shared<Schuifdeur>(1055, 440, 210));
@@ -49,9 +68,11 @@ MainWindow::MainWindow(QWidget *parent)
     lichtkrantWeergave->setGeometry(850, 730, 120, 22);
 
     client = new SocketClient("145.52.127.184", 8080);
-
-    server = new SocketServer("145.52.127.223", 9090);
-    server->startServer();
+    IP = init();
+    if(IP != ""){
+        server = new SocketServer(IP, 9090);
+        server->startServer();
+    }
     connect(server, &SocketServer::Voordeur, this, &MainWindow::handleSocketVoordeur);
     connect(server, &SocketServer::Deur1, this, &MainWindow::handleSocketDeur1);
     connect(server, &SocketServer::Deur2, this, &MainWindow::handleSocketDeur2);
@@ -60,13 +81,15 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::paintEvent(QPaintEvent *event){
 
     QPainter painter(this);
-    QImage image("C:/Users/sanne/Documents/School/Semester 4/Project/GUI/gebouw/UI/Lege plattegrond appartementen.png");
-
+    //QImage image("C:/Users/sanne/Documents/School/Semester 4/Project/GUI/gebouw/UI/Lege plattegrond appartementen.png");
+    QImage image("C:/Users/gdjon/OneDrive/Bureaublad/gebouw/UI/Lege plattegrond appartementen.png");
     painter.drawImage(10,10,image);
 
     for (int i = 0; i < deuren.size(); i++) {
         deuren.at(i)->teken(this);
     }
+    // loop over alle indicatoren
+    for (auto it : indicatoren) { it->teken(this); }
 }
 
 void MainWindow::handleVoordeur() {
@@ -148,6 +171,14 @@ void MainWindow::handleSocketDeur2(bool isOpen) {
     }
     update();
 }
+void MainWindow::handleSocketTempSensor(bool isOn){
+    if (isOn == true){
+        indicatoren.at(0)->setOpen();
+    }
+    else{
+        indicatoren.at(0)->setOpen();
+    }
+}
 
 MainWindow::~MainWindow() {
     delete ui;
@@ -157,3 +188,4 @@ MainWindow::~MainWindow() {
     client->disconnectFromServer();
     delete client;
 }
+

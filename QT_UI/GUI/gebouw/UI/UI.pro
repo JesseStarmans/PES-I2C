@@ -16,7 +16,8 @@ SOURCES += \
     mainwindow.cpp \
     schuifdeur.cpp \
     socketclient.cpp \
-    socketserver.cpp
+    socketserver.cpp \
+    indicator.cpp
 
 HEADERS += \
     defines.h \
@@ -25,7 +26,8 @@ HEADERS += \
     mainwindow.h \
     schuifdeur.h \
     socketclient.h \
-    socketserver.h
+    socketserver.h \
+    indicator.h
 
 FORMS += \
     mainwindow.ui

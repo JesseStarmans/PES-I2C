@@ -16,6 +16,7 @@ class MainWindow;
 QT_END_NAMESPACE
 //using namespace std;
 
+class Indicator;
 class SocketClient;
 class SocketServer;
 class Deur;
@@ -38,14 +39,17 @@ private slots:
     void handleSocketVoordeur(bool);
     void handleSocketDeur1(bool);
     void handleSocketDeur2(bool);
-
+    // Temperatuur sensor update server
+    void handleSocketTempSensor(bool);
 private:
     Ui::MainWindow *ui;
     std::vector<std::shared_ptr<Deur>> deuren;
     std::vector<QPushButton*> buttons;
+    std::vector<std::shared_ptr<Indicator>> indicatoren;
     QLineEdit* lichtkrantTekst;
     QLabel* lichtkrantWeergave;
     SocketClient* client;
     SocketServer* server;
+    QString IP;
 };
 #endif // MAINWINDOW_H

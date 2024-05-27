@@ -2,6 +2,7 @@
 #include "defines.h"
 #include <QCoreApplication>
 #include <QDebug>
+#include <string>
 
 SocketServer::SocketServer(QString host, quint16 port, QObject *parent) : QTcpServer(parent), IP(host), poort(port)
 {
@@ -81,6 +82,9 @@ void SocketServer::checkReceived(QString message) {
     }
     else if (message == "Deur 2 dicht") {
         emit Deur2(DICHT);
+    }
+    if (message.toStdString().substr(0,13) == "Temperatuur: "){
+        // work in progess (23-05-2024)
     }
 
 }
