@@ -1,48 +1,14 @@
-/*!
-    @file QTTest.cpp
-    @date 24 May 2024
-    @author Jesse Starmans
-    @brief Main CPP file voor de Wemos Raspberry Pi.
-
-    Dit is de main voor de Raspberry Pi die verbonden is over sockets aan de Wemos bordjes en de QT beheerders-interface. \n
-    Deze main maakt gebruik van de SocketServer en SocketClient klasses voor het verbinden met de andere Raspberry Pi, de Wemos bordjes en de QT beheerdersinterface.
-*/
 #include "SocketServer.h"
 #include "SocketClient.h"
 
 #include <string>
 
-/*!
-	@def PI_B
-	@brief Definieert het IP adres van de andere Raspberry Pi.
-
-	Deze macro definieert het IP adres van de I2C Raspberry Pi.
-*/
 #define  PI_B "145.52.127.177"
-
-/*!
-	@def MY_IP
-	@brief Definieert het IP adres van deze Raspberry Pi.
-
-	Deze macro definieert het IP adres van deze Raspberry Pi die verbonden is aan de Wemos bordjes en de QT beheerdersinterface.
-*/
 #define MY_IP "145.52.127.184"
+#define QT "192.168.56.1"
 
-/*!
-	@def MY_PORT
-	@brief Definieert de poort van de socket server op deze Raspberry Pi.
+vector<string> IPsWemos;
 
-	Deze macro definieert de poort waar de socket server op deze Raspberry Pi naar moet gaan luisteren. Deze poort moet gebruikt worden door de socket clients die een verbinding willen opzetten met deze socket server. 
-*/
-#define MY_PORT 8080
-
-vector<string> IPsWemos;		/*!< De vector met string waar de IP addressen van de Wemos borjes in opgeslagen worden.*/
-
-/*!
-	@brief Check of de meegegeven string een bekende commando is.
-
-	Deze functie checkt of de meegegeven string een bekend commando is. Als dit zo is, wordt de juiste afhandeling van deze commando aangeroepen.
-*/
 int checkReceived(std::string received) {
 	if (received == "Error" ) {
 		cout<<"Error receiving data"<<endl;
@@ -56,6 +22,20 @@ int checkReceived(std::string received) {
 		if (received == "VoordeurKnop Openen") {
 			cout<<"Voordeur is geopend"<<endl;
 			return 0x40;
+		}
+		else if (received == "203"){
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			return 0xD0;
+		}
+		else if (received == "210"){
+			SocketClient client(6060, IPsWemos[0].c_str());
+			client.sendData(received);
+			string returning = client.receiveData();
+			cout << returning << endl;
+			SocketClient QTClient(9090, QT);
+            QTClient.sendData(returning);
+			return 0xD2;
 		}
 		else if (received == "VoordeurKnop Sluiten") {
 			cout<<"Voordeur is gesloten"<<endl;
@@ -157,22 +137,17 @@ int checkReceived(std::string received) {
 	}
 }
 
-/*!
-	@brief De main voor het programma runnen.
-
-	Dit is de main die het volledige programma laat lopen.
-*/
 int main(void) {	
-	SocketServer server(MY_PORT, MY_IP);
+	SocketServer server(8080, MY_IP);
 	
-	//IPsWemos = server.setupWemosIP();
+	IPsWemos = server.setupWemosIP();
 	// {
-    //     SocketClient client(MY_PORT, IPsWemos[0].c_str());
-        
-    //     client.sendData("Test123");
-    //     string returning = client.receiveData();
+    // SocketClient client(6060, IPsWemos[0].c_str());
+    // client.sendData("Test123");
+	// string returning = client.receiveData();
     // }
-    server.serverListen();
+	// cout << returning << endl;
+    // server.serverListen();
 
 	/*Hieronder de constant runnende server*/
 	while (true) {
@@ -181,7 +156,10 @@ int main(void) {
 		string received = server.receiveData();
 		
 		int respons = checkReceived(received);
-		
+		switch(respons){
+			case 0x40:
+			
+		}
 		if (respons >= 0x40 && respons < 0x50) {
 			cout<<"UI event ontvangen"<<endl;
 		}
@@ -199,6 +177,9 @@ int main(void) {
 		}
 		else if (respons == 0x22) {
 			cout << "Set Temperatuur" << endl;
+		}
+		else if (respons == 0xD2){
+			cout << "Vraag plantjes" << endl;
 		}
 		else {
 			cout<<"Gestuurd"<<endl;
