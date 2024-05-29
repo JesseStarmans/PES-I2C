@@ -1,0 +1,177 @@
+<diagram program="umletino" version="15.1"><zoom_level>9</zoom_level><element><id>UMLClass</id><coordinates><x>810</x><y>864</y><w>225</w><h>216</h></coordinates><panel_attributes>SocketServer
+--
+- serverSocket : int
+- serverAddress : sockaddr_in
+- clientSocket : int
+- port : int
+- IP : const char*
+- timers : list&lt;Timer*&gt;
+--
++ SocketServer(int, const char*)
++ setupWemosIP() : vector&lt;std::string&gt;
++ listenForClients() : void
++ serverListen() : void
++ serverAccept() : void
++ sendData(const std::string&amp;) : void
++ receiveData() : std::string
++ closeClientConnection() : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>810</x><y>630</y><w>225</w><h>135</h></coordinates><panel_attributes>SocketClient
+--
+- clientSocket : int
+- serverAddress : sockaddr_in
+- port : int
+- IP : const char*
+--
++ SocketClient(int, const char*)
++ sendData(const std::string&amp;)
++ receiveData() : std::string</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>945</x><y>756</y><w>27</w><h>126</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;120;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1215</x><y>0</y><w>243</w><h>495</h></coordinates><panel_attributes>Wemos
+--
+bg=green</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>513</x><y>558</y><w>558</w><h>747</h></coordinates><panel_attributes>Raspberry Pi
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>288</x><y>1152</y><w>189</w><h>171</h></coordinates><panel_attributes>NUCLEO-L432KC
+--
+
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>369</x><y>1494</y><w>90</w><h>63</h></coordinates><panel_attributes>Buzzer
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>468</x><y>1494</y><w>90</w><h>63</h></coordinates><panel_attributes>Servo
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>225</x><y>1593</y><w>99</w><h>63</h></coordinates><panel_attributes>Temperatuur/
+Luchtvochtigheid
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>117</x><y>1593</y><w>90</w><h>63</h></coordinates><panel_attributes>CO2/brand
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>405</x><y>1440</y><w>126</w><h>72</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>120;10;120;50;10;50;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>504</x><y>1440</y><w>27</w><h>72</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;10;60</additional_attributes></element><element><id>Relation</id><coordinates><x>153</x><y>1422</y><w>144</w><h>189</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;10;90;70;90;70;180;140;180;140;190</additional_attributes></element><element><id>Relation</id><coordinates><x>153</x><y>1422</y><w>81</w><h>189</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;10;90;70;90;70;180;10;180;10;190</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>9</x><y>1404</y><w>324</w><h>261</h></coordinates><panel_attributes>Sensoren
+--
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>360</x><y>1422</y><w>306</w><h>144</h></coordinates><panel_attributes>Actuatoren
+--
+bg=Yellow</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>279</x><y>1125</y><w>207</w><h>207</h></coordinates><panel_attributes>Microcontroler
+--
+bg=blue</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1773</x><y>468</y><w>90</w><h>63</h></coordinates><panel_attributes>RFID_Sensor
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1413</x><y>414</y><w>252</w><h>27</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;260;10</additional_attributes></element><element><id>Relation</id><coordinates><x>882</x><y>756</y><w>27</w><h>126</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;10;120</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1656</x><y>297</y><w>216</w><h>243</h></coordinates><panel_attributes>ActieveSensoren
+--
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1656</x><y>558</y><w>216</w><h>270</h></coordinates><panel_attributes>Actuatoren
+--
+bg=Yellow</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1665</x><y>468</y><w>90</w><h>63</h></coordinates><panel_attributes>Noodknop
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>18</x><y>1593</y><w>90</w><h>63</h></coordinates><panel_attributes>Beweging
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1773</x><y>756</y><w>90</w><h>63</h></coordinates><panel_attributes>LED Matrix
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1656</x><y>702</y><w>180</w><h>72</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;120;10;120;50;180;50;180;60</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>1647</x><y>693</y><w>18</w><h>63</h></coordinates><panel_attributes></panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1395</x><y>108</y><w>270</w><h>621</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;240;10;240;670;280;670</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>504</x><y>1422</y><w>18</w><h>63</h></coordinates><panel_attributes></panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLInterface</id><coordinates><x>153</x><y>1404</y><w>18</w><h>63</h></coordinates><panel_attributes></panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>54</x><y>1422</y><w>180</w><h>189</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>120;10;120;90;180;90;180;180;10;180;10;190</additional_attributes></element><element><id>Relation</id><coordinates><x>153</x><y>1314</y><w>243</w><h>117</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>250;10;250;50;10;50;10;110</additional_attributes></element><element><id>Relation</id><coordinates><x>369</x><y>1314</y><w>162</w><h>135</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;10;50;160;50;160;130</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1665</x><y>756</y><w>90</w><h>63</h></coordinates><panel_attributes>LED Strip
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1656</x><y>702</y><w>126</w><h>72</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;120;10;120;50;60;50;60;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>225</x><y>1512</y><w>99</w><h>63</h></coordinates><panel_attributes>Light Depen-
+dent Resistor
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>567</x><y>1494</y><w>90</w><h>63</h></coordinates><panel_attributes>LED
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>153</x><y>1422</y><w>144</w><h>108</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;10;90;140;90;140;100</additional_attributes></element><element><id>Relation</id><coordinates><x>504</x><y>1440</y><w>126</w><h>72</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;10;50;120;50;120;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>117</x><y>1512</y><w>90</w><h>63</h></coordinates><panel_attributes>Pressure
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>153</x><y>1422</y><w>27</w><h>108</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>UMLInterface</id><coordinates><x>1647</x><y>405</y><w>18</w><h>63</h></coordinates><panel_attributes></panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1656</x><y>414</y><w>180</w><h>72</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;120;10;120;50;180;50;180;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>18</x><y>1512</y><w>90</w><h>63</h></coordinates><panel_attributes>Raam magneet
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>54</x><y>1422</y><w>126</w><h>108</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>120;10;120;90;10;90;10;100</additional_attributes></element><element><id>UMLClass</id><coordinates><x>18</x><y>1431</y><w>90</w><h>63</h></coordinates><panel_attributes>Grondvochtig-
+heid
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>54</x><y>1422</y><w>126</w><h>99</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>120;10;120;90;10;90;10;80</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1539</x><y>837</y><w>918</w><h>882</h></coordinates><panel_attributes>QT GUI
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1575</x><y>900</y><w>288</w><h>216</h></coordinates><panel_attributes>SocketClient
+--
+- socket : QTcpSocket*
+- IP : QString
+- poort : quint16
+- status : bool
+--
++ explicit SocketClient(QString, quint16, QObject*)
++ connectToServer() : void
++ disconnectFromtServer() : void
++ sendMessage(QString) : void
++ processMessage(const QString&amp;) : void
++ getStatus : bool
+- connected() : void
+- disconnected() : void
+- readyRead() : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1575</x><y>1179</y><w>252</w><h>261</h></coordinates><panel_attributes>MainWindow
+--
+- ui : UI::MainWindow*
+- deuren : vector&lt;shared_ptr&lt;Deur&gt;&gt;
+- buttons : vector&lt;QPushButton*&gt;
+- lichtkrantTekst : QLineEdit*
+- lichtkrantWeergave : QLabel*
+- client : SocketClient*
+- server : SocketServer*
+--
++ MainWindow(QWidget*)
++ paintEvent(QPaintEvent*) : void
+- handleVoordeur() : void
+- handleDeur1() : void
+- handleDeur2() : void
+- handleInvoerTekst() : void
+- handleSocketVoordeur(bool) : void
+- handleSocketDeur1(bool) : void
+- handleSocketDeur2(bool) : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1674</x><y>1107</y><w>27</w><h>90</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;10;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>2043</x><y>1170</y><w>189</w><h>189</h></coordinates><panel_attributes>Deur
+--
+- status : bool
+- x_coordinaat : int
+- y_coordinaat : int
+- lengte : unsinged int
+--
++ Deur(int, int, unsigned int)
++ open() : void
++ sluit() : void
+/+ teken(QPaintDevice*)/
++ isDeurOpen() : bool
++ deurLengte() : unsinged int
++ coordinaten() : pair&lt;int,int&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1818</x><y>1251</y><w>243</w><h>27</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;10;250;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1872</x><y>1521</y><w>252</w><h>171</h></coordinates><panel_attributes>Draaideur
+--
+- liggend : bool
+- rechtsom : bool
+--
++ Draaideur(int, int, unsinged int, bool, bool)
++ teken(QPaintDevice*) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>2142</x><y>1521</y><w>252</w><h>171</h></coordinates><panel_attributes>Schuifdeur
+--
+
+--
++ Schuifdeur(int, int, unsinged int)
++ teken(QPaintDevice*) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>2124</x><y>1350</y><w>162</w><h>189</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;100;160;100;160;190</additional_attributes></element><element><id>Relation</id><coordinates><x>1989</x><y>1350</y><w>162</w><h>189</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>160;10;160;100;10;100;10;190</additional_attributes></element><element><id>Relation</id><coordinates><x>1818</x><y>1089</y><w>216</w><h>108</h></coordinates><panel_attributes>lt=-&gt;</panel_attributes><additional_attributes>10;100;10;40;220;40;220;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>1890</x><y>918</y><w>252</w><h>180</h></coordinates><panel_attributes>SocketServer
+--
+- clients : QList&lt;QTcpSocket*&gt;
+- IP : QString
+- poort : quint16
+--
++ explicit SocketServer(QObject*)
++ startServer() : void
++ stopServer() : void
++ sendMessageToClients(const QString&amp;) : void
++ checkReceived(QString) : void
+- handleNewConnection() : void
+- readyRead() : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1260</x><y>360</y><w>162</w><h>117</h></coordinates><panel_attributes>WiFiServer
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1251</x><y>63</y><w>153</w><h>117</h></coordinates><panel_attributes>WiFiClient
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1656</x><y>414</y><w>126</w><h>72</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;120;10;120;50;60;50;60;60</additional_attributes></element><element><id>UMLClass</id><coordinates><x>693</x><y>1179</y><w>342</w><h>108</h></coordinates><panel_attributes>I2CConnection
+--
+- slaveAddress : uint8_t
+- slaveOpen : int
+--
++ I2CConnection(uint8_t)
++ sendI2CTo(const uint8_t, vector&lt;uint8_t&gt;, uint8_t) : void
++ receive6OverI2C(uint8_t) : vector&lt;uint8_t&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>468</x><y>1215</y><w>243</w><h>36</h></coordinates><panel_attributes>lt=-
+m1=I2C
+m2=I2C</panel_attributes><additional_attributes>10;10;250;10</additional_attributes></element><element><id>UMLUseCase</id><coordinates><x>1260</x><y>891</y><w>171</w><h>108</h></coordinates><panel_attributes>lt=.
+Internet
+fg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1422</x><y>927</y><w>135</w><h>36</h></coordinates><panel_attributes>lt=..
+Internetverbinding</panel_attributes><additional_attributes>10;20;130;20</additional_attributes></element><element><id>Relation</id><coordinates><x>1062</x><y>927</y><w>216</w><h>36</h></coordinates><panel_attributes>lt=..
+Internetverbinding</panel_attributes><additional_attributes>10;20;220;20</additional_attributes></element><element><id>Relation</id><coordinates><x>1332</x><y>486</y><w>126</w><h>423</h></coordinates><panel_attributes>lt=..
+Internetverbinding</panel_attributes><additional_attributes>10;10;10;450</additional_attributes></element><element><id>Relation</id><coordinates><x>846</x><y>1071</y><w>27</w><h>126</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;120;10;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1566</x><y>864</y><w>684</w><h>270</h></coordinates><panel_attributes>Socket
+--
+bg=magenta</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1566</x><y>1152</y><w>270</w><h>297</h></coordinates><panel_attributes>GUI
+--
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>1845</x><y>1143</y><w>567</w><h>567</h></coordinates><panel_attributes>Deur
+--
+bg=blue</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>801</x><y>594</y><w>243</w><h>486</h></coordinates><panel_attributes>Socket
+--
+bg=magenta</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>684</x><y>1152</y><w>360</w><h>144</h></coordinates><panel_attributes>I2C
+--
+bg=pink</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>1323</x><y>171</y><w>27</w><h>207</h></coordinates><panel_attributes>lt=&lt;-</panel_attributes><additional_attributes>10;10;10;210</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>522</x><y>621</y><w>243</w><h>351</h></coordinates><panel_attributes>Timers
+--
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>549</x><y>792</y><w>189</w><h>171</h></coordinates><panel_attributes>Timer5min
+--
+- tijdsduur: Time 
+--
++ getTime(): Time</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>576</x><y>657</y><w>135</w><h>108</h></coordinates><panel_attributes>&lt;&lt;Timer&gt;&gt;
+--
+
+--
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>639</x><y>756</y><w>27</w><h>54</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;10;40</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>729</y><w>180</w><h>153</h></coordinates><panel_attributes>lt=-&gt;
+m1=*
+m2=1</panel_attributes><additional_attributes>10;10;90;10;90;130;170;130;170;150</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>0</x><y>1098</y><w>675</w><h>603</h></coordinates><panel_attributes>C
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLNote</id><coordinates><x>1314</x><y>1125</y><w>252</w><h>54</h></coordinates><panel_attributes>Note
+bg=blue
+Voeg beslissing klasse toe, 
+om socket te voldoen aan single resposibility </panel_attributes><additional_attributes></additional_attributes></element></diagram>
