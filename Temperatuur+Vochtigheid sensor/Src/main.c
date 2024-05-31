@@ -49,7 +49,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 extern uint8_t I2C_REGISTERS[10];
-int requestTemp = 30;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -106,14 +106,34 @@ int main(void)
 	  HAL_UART_Transmit(&huart2, (uint8_t*)"I2C fail", 9, 100);
   	  Error_Handler();
     }
+  HAL_I2C_Master_Transmit(&hi2c3, 0x58 << 1, (uint8_t[]) {0x20, 0x03}, 2, HAL_MAX_DELAY); // om de SGP30 sensor te initialiseren
+  uint8_t sensorAddressCO2 = 0x58;// Sensor address CO2
+  uint8_t dataCO2[6]; // Data buffer to store sensor readings
+  uint8_t commandCO2[] = {0x20, 0x08}; // Command for reading measurement data
+  uint8_t alarmStatus = 0;
+  for(int i = 0; i < 20; i++){
+		HAL_I2C_Master_Transmit(&hi2c3, sensorAddressCO2 << 1, commandCO2, sizeof(commandCO2), HAL_MAX_DELAY);
+
+		// Wait for measurement to complete
+		HAL_Delay(20);
+
+		// Read measurement data
+		HAL_I2C_Master_Receive(&hi2c3, (sensorAddressCO2 << 1) | 0x01, dataCO2, sizeof(dataCO2), HAL_MAX_DELAY);
+		HAL_Delay(1000);
+  }
+  uint8_t requestTemp = 20;
+  uint8_t verwarmingStatus = 0;
+  uint16_t grenswaarde = 800;
+  HAL_UART_Transmit(&huart2, (uint8_t*)"Done\n", 6, HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1)
 	{
+
 		/*Set gewilde temperatuur*/
-		if (I2C_REGISTERS[1] == 115 && I2C_REGISTERS[2] == 101 && I2C_REGISTERS[3] == 116){
+		if (I2C_REGISTERS[1] == 201){
 			requestTemp = I2C_REGISTERS[4];
 			I2C_REGISTERS[0] = 1;
 			HAL_Delay(100);
@@ -122,7 +142,7 @@ int main(void)
 			}
 		}
 		/*Vraag temperatuur op*/
-		else if (I2C_REGISTERS[1] != 0){
+		else if (I2C_REGISTERS[1] == 200){
 			//HAL_UART_Transmit(&huart2, (uint8_t*)"I2C test", 9, 100);
 			char buf[50];
 			// Read data from SHT3x sensor
@@ -144,9 +164,8 @@ int main(void)
 			float temperature = -45 + 175 * ((float)tempRaw / 65535);
 			uint16_t humRaw = (data[3] << 8) | data[4];
 			float humidity = 100 * ((float)humRaw / 65535);
-			int verwarmingStatus = 0;
-			if (temperature >= requestTemp){
-				verwarmingStatus = 0;
+			if (temperature >= (float)requestTemp){
+				verwarmingStatus = 2;
 			}
 			else {verwarmingStatus = 1;}
 			// Print data to Serial port (uart)
@@ -156,20 +175,60 @@ int main(void)
 			for(int i = 0; i < 10; i++){
 				I2C_REGISTERS[i] = 0;
 			}
+
+			int intPart, decPart;
+			//splitFloat(temperature, &intPart, &decPart);
 			// Neem het gehele deel van de float
-			uint8_t intPart = (uint8_t)temperature;
+			intPart = (int)temperature;
 
 			// Neem het decimale deel van de float
 			float decimal = temperature - (float)(intPart);
-
 			// Converteer het decimale deel naar een percentage (bijv. 0.56 wordt 56)
-			uint8_t decPart = (uint8_t)(decimal * 100);
+			decPart = (int)(decimal * 100);
 
-
-			I2C_REGISTERS[1] = (uint8_t)intPart;
-			I2C_REGISTERS[2] = (uint8_t)decPart;
+			I2C_REGISTERS[1] = (uint8_t) intPart;
+			I2C_REGISTERS[2] = (uint8_t) decPart;
 			I2C_REGISTERS[3] = (uint8_t)humidity;
 			I2C_REGISTERS[4] = verwarmingStatus;
+
+			I2C_REGISTERS[0] = 1; //Aangeven dat alles is geschreven.
+
+			HAL_Delay(100);
+
+			for(int i = 0; i < 10; i++){
+				I2C_REGISTERS[i] = 0;
+			}
+		}
+		else if(I2C_REGISTERS[1] == 203){
+			char buf2[50];
+
+			HAL_I2C_Master_Transmit(&hi2c3, sensorAddressCO2 << 1, commandCO2, sizeof(commandCO2), HAL_MAX_DELAY);
+
+			// Wait for measurement to complete
+			HAL_Delay(20);
+
+			// Read measurement data
+			HAL_I2C_Master_Receive(&hi2c3, (sensorAddressCO2 << 1) | 0x01, dataCO2, sizeof(dataCO2), HAL_MAX_DELAY);
+
+			// Process data to get CO2 and TVOC
+			uint16_t CO2 = (dataCO2[0] << 8) | dataCO2[1];
+			if(CO2>grenswaarde){
+				alarmStatus = 1;
+			}
+			uint16_t TVOC = (dataCO2[3] << 8) | dataCO2[4];
+			sprintf(buf2, " CO2: %d\r\n", CO2);
+			HAL_UART_Transmit(&huart2, (uint8_t*)buf2, strlen(buf2), 100);
+			 // Opsplitsen van de 16-bits CO2 waarde in twee 8-bits waarden
+			for(int i = 0; i < 10; i++){
+				I2C_REGISTERS[i] = 0;
+			}
+			uint8_t CO2_high = (uint8_t)(CO2 >> 8); // Hoger byte
+			uint8_t CO2_low = (uint8_t)(CO2 & 0xFF); // Lager byte
+
+			// Sla de gesplitste waarden op in de I2C registers
+			I2C_REGISTERS[1] = CO2_high;
+			I2C_REGISTERS[2] = CO2_low;
+			I2C_REGISTERS[3] = alarmStatus;
 			I2C_REGISTERS[0] = 1;
 
 			HAL_Delay(100);
@@ -408,7 +467,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void splitFloat(float toSplit, int *intPart, int *decPart){
+	// Neem het gehele deel van de float
+	*intPart = (int)toSplit;
 
+	// Neem het decimale deel van de float
+	float decimal = toSplit - (float)(*intPart);
+	// Converteer het decimale deel naar een percentage (bijv. 0.56 wordt 56)
+	*decPart = (int)(decimal * 100);
+}
 
 /* USER CODE END 4 */
 
