@@ -4,9 +4,9 @@
 #include <LedControl.h>
 #include <string>
 
-const char* ssid = "NSELab";
-const char* password = "NSELabWiFi";
-const char* serverIPaddress = "145.52.127.184"; // IP address van de Pi 
+const char* ssid = "PiNetGroepG";
+const char* password = "GroepGNet";
+const char* serverIPaddress = "10.42.0.251"; // IP address van de Pi 
 const int port = 8080; // Port voor server
 const int serverPort = 6060;
 
@@ -17,7 +17,7 @@ unsigned long bufferLong [14] = {0};
 LedControl lc = LedControl(12, 14, 15, 4); //din cs
 
 //const unsigned char scrollText[] PROGMEM = {" dit WERKT "};
-char receivedText[50] = " $ 35,- ";  // Buffer voor ontvangen tekst
+char receivedText[50] = " TEST ";  // Buffer voor ontvangen tekst
 
 WiFiServer server(serverPort);
 
@@ -42,7 +42,7 @@ void setup() {
   // sendIP functies bestaan om de server IP invulling te geven. Comment uit wat je niet gebruikt
   sendIP("Wemos1");
   sendIP("Wemos2");
-  sendIP("Wemos3");
+  //sendIP("Wemos3");
   Serial.println("Waiting for request");
    for (int x = 0; x < numDevices; x++) {
     lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
@@ -69,6 +69,7 @@ void sendIP(String name){
   
   // Send a message to the server
   IPAddress localIP = WiFi.localIP();
+  Serial.println(localIP);
   char ipFull[50] = "";
   sprintf(ipFull, "%s %d.%d.%d.%d", name, localIP[0], localIP[1],localIP[2],localIP[3]);
   Serial.println(ipFull);
@@ -82,7 +83,14 @@ void sendIP(String name){
 }
 
 void loop() {
+
   serverCode();
+  if(WiFi.status() != WL_CONNECTED){
+    Serial.println("Reconecting......");
+    while(!WiFi.reconnect()){
+
+    }
+  }
   if (Serial.available() > 0) {
     String inlees = Serial.readStringUntil('\n');
     Serial.println("Ontvangen data: " + inlees);
@@ -1113,7 +1121,7 @@ void clientCode(){
       Serial.println("Connection to server failed");
     }
     
-    delay(5000);
+    delay(500);
   }
 }
 
@@ -1143,7 +1151,7 @@ void clientCodeMetSend(String toSend) {
       Serial.println("Connection to server failed");
     }
     
-    delay(5000);
+    delay(500);
   }
 }
 
