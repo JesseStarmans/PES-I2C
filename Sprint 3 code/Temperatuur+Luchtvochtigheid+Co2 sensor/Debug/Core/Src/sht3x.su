@@ -1,0 +1,5 @@
+../Core/Src/sht3x.c:11:17:convert_temperature	24	static
+../Core/Src/sht3x.c:20:17:convert_humidity	24	static
+../Core/Src/sht3x.c:28:16:gen_crc8	32	static
+../Core/Src/sht3x.c:44:6:sht3x_sensor_present	32	static
+../Core/Src/sht3x.c:62:6:sht3x_one_shot_measurement_clock_stretching	48	static
