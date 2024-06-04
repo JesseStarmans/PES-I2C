@@ -6,7 +6,7 @@
 #include <string>
 
 #define LED_PIN     D4 // pin waar de led op aangesloten is
-#define NUM_LEDS    20
+#define NUM_LEDS    8
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 #define VERGROTING 10 // vergroting per helderheidsknop ingedrukt
@@ -46,6 +46,9 @@ void setup() {
     fill_solid(leds, NUM_LEDS, HTMLColors[colorIndex]);  
     FastLED.show();
     
+    pinMode(OMHOOG, INPUT);
+    pinMode(OMLAAG, INPUT);
+    pinMode(KLEURWISSEL, INPUT);
     pinMode(OMHOOG, INPUT_PULLUP);
     pinMode(OMLAAG, INPUT_PULLUP);
     pinMode(KLEURWISSEL, INPUT_PULLUP);
@@ -240,27 +243,29 @@ void ledstripaansturen() {
                 helderheid = 255;
             }
             FastLED.setBrightness(helderheid);
+            FastLED.getBrightness();
+            Serial.println((int)FastLED.getBrightness());
             FastLED.show();
-            lastButtonPress = currentMillis - 100;
+            lastButtonPress = currentMillis;
         }
 
         if (digitalRead(KLEURWISSEL) == LOW) {
             colorIndex = (colorIndex + 1) % (sizeof(HTMLColors) / sizeof(HTMLColors[0]));
-            for (int i = 0; i < 255; i++) {
-                fill_solid(leds, NUM_LEDS, blend(leds[0], HTMLColors[colorIndex], i));
+            //for (int i = 0; i < 255; i++) {
+                fill_solid(leds, NUM_LEDS, HTMLColors[colorIndex]);
                 FastLED.show();
-            }
             lastButtonPress = currentMillis;
         }
 
         if (digitalRead(OMLAAG) == LOW) {
-            helderheid -= VERGROTING;
-            if (helderheid < 0) { // zorg voor een randwaarde
+            if (helderheid >= VERGROTING) {
+                helderheid -= VERGROTING;
+            } else {
                 helderheid = 0;
             }
             FastLED.setBrightness(helderheid);
             FastLED.show();
-            lastButtonPress = currentMillis - 100;
+            lastButtonPress = currentMillis;
         }
     }
 }
