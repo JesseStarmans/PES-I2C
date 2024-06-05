@@ -3,9 +3,13 @@
 
 #include <string>
 
-#define  PI_B "145.52.127.177"
-#define MY_IP "145.52.127.184"
-#define QT "192.168.56.1"
+#define  PI_B "10.42.0.1"
+#define MY_IP "10.42.0.251"
+#define QT "10.42.0.190"
+
+// #define PI_B "145.52.127.177"
+// #define MY_IP "145.52.127.184"
+// #define QT "145.52.127.223"
 
 vector<string> IPsWemos;
 
@@ -19,13 +23,50 @@ int checkReceived(std::string received) {
 		return 0x01;
 	}
 	else {
-		if (received == "VoordeurKnop Openen") {
-			cout<<"Voordeur is geopend"<<endl;
+		if (received == "VoordeurKnop 120" || received == "VoordeurKnop 25") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			cout<<"Voordeur open/sluit"<<endl;
 			return 0x40;
+		}
+		else if (received == "Deur1Knop 120" || received == "Deur1Knop 25") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			cout<<"Deur 1 open/sluit"<<endl;
+			return 0x40;
+		}
+		else if (received == "Deur2Knop 120" || received == "Deur2Knop 25") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			cout<<"Deur 2 open/sluit"<<endl;
+			return 0x40;
+		}
+		else if (received == "140"){
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			cout<<"Druk sensor opvragen"<<endl;
+			cout << "test1 : " << received << endl;
+			return 0x40;
+		}
+		else if (received == "Rruk: 1" || received == "Rruk: 2"){
+			SocketClient client(9090, QT);
+			client.sendData(received);
+			cout<<"Rruk"<<endl;
+			return 141;
+		}
+		else if (received == "141"){
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			cout<<"gordijn/deuren"<<endl;
+			return 141;
 		}
 		else if (received == "203"){
 			SocketClient client(7070, PI_B);
 			client.sendData(received);
+			string returning = client.receiveData();
+			cout << returning << endl;
+			SocketClient QTClient(9090, QT);
+            QTClient.sendData(returning);
 			return 0xD0;
 		}
 		else if (received == "210"){
@@ -38,65 +79,72 @@ int checkReceived(std::string received) {
 			return 0xD2;
 		}
 		else if (received == "VoordeurKnop Sluiten") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
 			cout<<"Voordeur is gesloten"<<endl;
 			return 0x41;
 		}
 		else if (received == "Deur1Knop Openen") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
 			cout<<"Deur 1 is geopend"<<endl;
 			return 0x42;
 		}
 		else if (received == "Deur1Knop Sluiten") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
 			cout<<"Deur 1 is gesloten"<<endl;
 			return 0x43;
 		}
 		else if (received == "Deur2Knop Openen") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
 			cout<<"Deur 2 is geopend"<<endl;
 			return 0x44;
 		}
 		else if (received == "Deur2Knop Sluiten") {
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
 			cout<<"Deur 2 is gesloten"<<endl;
 			return 0x45;
 		}
         else if (received == "Voordeur open") {
-   		 	const char IP[16] = "145.52.127.223";
-            SocketClient QTClient(9090, IP);
-            QTClient.sendData("Voordeur open");
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Voordeur open");
             return 0x50;
         }
         else if (received == "Voordeur dicht") {
-   		 	const char IP[16] = "145.52.127.223";
-            SocketClient QTClient(9090, IP);
-            QTClient.sendData("Voordeur dicht");
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Voordeur dicht");
             return 0x51;
         }
         else if (received == "Deur 1 open") {
-   		 	const char IP[16] = "145.52.127.223";
-            SocketClient QTClient(9090, IP);
-            QTClient.sendData("Deur 1 open");
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Deur1 open");
             return 0x52;
         }
 		else if (received == "Deur 1 dicht") {
-   		 	const char IP[16] = "145.52.127.223";
-            SocketClient QTClient(9090, IP);
-            QTClient.sendData("Deur 1 dicht");
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Deur1 dicht");
 			return 0x53;
 		}
 		else if (received == "912071d") {
-   		 	const char IP[16] = "145.52.127.223";
-			SocketClient QTClient(9090, IP);
-			QTClient.sendData("Deur 1 open");
+			{
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			}
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Deur1 open");
 			return 0x57;
 		}
         else if (received == "Deur 2 open") {
-   		 	const char IP[16] = "145.52.127.223";
-            SocketClient QTClient(9090, IP);
-            QTClient.sendData("Deur 2 open");
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Deur2 open");
             return 0x54;
         }
 		else if (received == "Deur 2 dicht") {
-   		 	const char IP[16] = "145.52.127.223";
-            SocketClient QTClient(9090, IP);
-            QTClient.sendData("Deur 2 dicht");
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Deur2 dicht");
 			return 0x55;
 		}
 		else if (received.find("lichtkrant") != std::string::npos) {
@@ -107,9 +155,12 @@ int checkReceived(std::string received) {
 			return 0x80;
 		}
 		else if (received == "b8c72833") {
-   		 	const char IP[16] = "145.52.127.223";
-			SocketClient QTClient(9090, IP);
-			QTClient.sendData("Deur 2 open");
+			{
+			SocketClient client(7070, PI_B);
+			client.sendData(received);
+			}
+   		 	SocketClient QTClient(9090, QT);
+			QTClient.sendData("Deur2 open");
 			return 0x56;
 		}
 		else if (received == "I2C Pi sturen") {
@@ -117,9 +168,21 @@ int checkReceived(std::string received) {
 			client.sendData("Wemos Pi sturen");
 			return 0x70;
 		} // Temperatuur logica
-		else if (received == "Check Temp") {
+		else if (received == "200") {
 			SocketClient client(7070, PI_B);
-			client.sendData("Check Temp");
+			client.sendData("CheckTemp");
+			return 0x21;
+		} 
+		else if (received.find("201") != std::string::npos) {
+			SocketClient client(7070, PI_B);
+			//cout<<received<<endl;
+			client.sendData(received);
+			return 0xE1;
+		}
+		else if (received == "Check CO2") {
+			SocketClient client(7070, PI_B);
+			cout<<received<<endl;
+			client.sendData("210");
 			return 0x21;
 		} 
 		else if (received.find("Temperatuur") != std::string::npos) {
@@ -130,24 +193,57 @@ int checkReceived(std::string received) {
 		else if (received == "I2C Pi return") {
 			return 0x71;
 		}
+		else if (received.find("RTemp:") != std::string::npos) {
+			SocketClient QTClient(9090, QT);
+			QTClient.sendData(received);
+			return 0xF0;
+		}
+		else if (received.find("Plant") != std::string::npos) {
+			SocketClient wemosClient(6060, IPsWemos[2].c_str());
+			wemosClient.sendData(received);
+			//string returning = wemosClient.receiveData();
+			return 0xD2;
+		}
+		else if (received.find("Rpan:") != std::string::npos){
+			SocketClient QTClient(9090, QT);
+			QTClient.sendData(received);
+			return 0xD2;
+		}
+		else if (received.find("RPlnt:") != std::string::npos) {
+			SocketClient QTClient(9090, QT);
+			QTClient.sendData(received);
+			return 0xD3;
+		}
+		else if (received.find("RCO2:") != std::string::npos) {
+			SocketClient QTClient(9090, QT);
+			QTClient.sendData(received);
+			return 0xF0;
+		}
+		else if (received.find("204") != std::string::npos) {
+			SocketClient client(7070, PI_B);
+			//cout<<received<<endl;
+			client.sendData(received);
+			return 0xE2;
+		}
 		else {
 			cout <<"Succesvol data ontvangen "<<received<<endl;
 			return 0xFF;
 		}
-	}
+}
 }
 
-int main(void) {	
+int main(void) {
+	try {	
 	SocketServer server(8080, MY_IP);
 	
-	IPsWemos = server.setupWemosIP();
-	// {
-    // SocketClient client(6060, IPsWemos[0].c_str());
-    // client.sendData("Test123");
-	// string returning = client.receiveData();
-    // }
-	// cout << returning << endl;
-    // server.serverListen();
+	// IPsWemos = server.setupWemosIP();
+	
+
+	// for (auto it : IPsWemos) {
+	// 	cout<<it<<endl;
+	// }
+
+    server.serverListen();
 
 	/*Hieronder de constant runnende server*/
 	while (true) {
@@ -156,10 +252,8 @@ int main(void) {
 		string received = server.receiveData();
 		
 		int respons = checkReceived(received);
-		switch(respons){
-			case 0x40:
-			
-		}
+		//switch(respons){
+		//	case 0x40:
 		if (respons >= 0x40 && respons < 0x50) {
 			cout<<"UI event ontvangen"<<endl;
 		}
@@ -186,5 +280,8 @@ int main(void) {
 		}
 		
 		server.closeClientConnection();
+	}
+	}catch(...){
+		cout << "Foutje oops" << endl;
 	}
 }
