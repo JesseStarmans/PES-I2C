@@ -121,11 +121,11 @@ void loop() {
         while (!WiFi.reconnect()) {}
     }
 
-    if (Serial.available() > 0) {
+    /*if (Serial.available() > 0) { //dit vindt de ledstrip niet leuk als je helderheid omhoog of omlaag wilt zetten.
         String inlees = Serial.readStringUntil('\n');
         Serial.println("Ontvangen data: " + inlees);
         clientCodeMetSend(inlees);
-    }
+    }*/
 
     if (sendValue) {
         clientCodeMetSend(String(waarde));
