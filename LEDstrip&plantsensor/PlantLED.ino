@@ -5,7 +5,7 @@
 #include <LedControl.h>
 #include <string>
 
-#define LED_PIN     D4 // pin waar de led op aangesloten is
+#define LED_PIN     D8 // pin waar de led op aangesloten is
 #define NUM_LEDS    8
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
@@ -29,6 +29,7 @@ int waarde = 0;
 int helderheid = 128; 
 int colorIndex = 0; // Index voor de huidige kleur
 unsigned long lastButtonPress = 0;
+int status = 0;
 
 bool sendValue = false; 
 
@@ -71,6 +72,7 @@ void setup() {
     sendIP("Wemos1");
     sendIP("Wemos2");
     sendIP("Wemos3");
+    sendIP("Wemos4");
     Serial.println("Waiting for request");
     waarde = analogRead(A0);
 }
@@ -136,26 +138,34 @@ void loop() {
 
 void serverCode() {
     WiFiClient client = server.available();
-
     if (client) {
         Serial.println("New Client");
-        while (client.connected()) {
+        //while (client.connected()) {
             if (client.available()) {
+                Serial.println("Test1");
                 String request = client.readStringUntil('\r');
                 Serial.println("Request: " + request);
-
                 if (request == "Plant") {
-                  waarde = analogRead(A0);
-                    clientCodeMetSend(String(waarde));
-
+                    waarde = analogRead(A0);
+                    if (waarde < 500) {
+                        setColor(255, 0, 0); // Red Color
+                        status = 1;
+                    } else if (waarde >=500) {
+                        
+                        setColor(0, 255, 0); // groen Color
+                        status = 2;
+                    }
+                    String deel1 = "Rpan: ";
+                    String deel2 = String(status);
+                    clientCodeMetSend(deel1 + deel2);
                 }
-                
                 delay(100);
                 client.stop();
                 Serial.println("Client disconnected");
             }
-        }
+        //}
     }
+    Serial.println("Uit de functie servercode");
 }
 
 void clientCode() {
