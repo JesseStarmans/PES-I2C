@@ -242,7 +242,7 @@ void ledstripaansturen() {
             FastLED.setBrightness(helderheid);
             FastLED.getBrightness();
             Serial.println("Helderheid omhoog: " + String((int)FastLED.getBrightness()));
-            FastLED.show();
+            FastLED.show();//f
             lastButtonPress = currentMillis;
         }
 
