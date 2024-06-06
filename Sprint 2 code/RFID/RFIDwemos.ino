@@ -7,7 +7,11 @@
 
 #define SS_PIN D8
 #define RST_PIN D3
+#define WEMOS3 "Wemos3"
+#define WEMOS4 "Wemos4"
 
+//const char* wemos3 = "wemos3";
+//const char* wemos4 = "wemos4";
 const char* ssid = "NSELab";
 const char* password = "NSELabWiFi";
 const char* serverIPaddress = "145.52.127.184"; // IP address van de Pi 
@@ -18,6 +22,8 @@ WiFiServer server(port);
 MFRC522 rfid(SS_PIN, RST_PIN); // Instance of the class
 
 byte nuidPICC[4];
+
+
 
 void setup() { 
   Serial.begin(9600);
@@ -40,7 +46,8 @@ server.begin();
   // sendIP functies bestaan om de server IP invulling te geven. Comment uit wat je niet gebruikt
   //sendIP("Wemos1");
   //sendIP("Wemos2");
-  sendIP("Wemos3");
+  //sendIP("Wemos3");
+  sendIP("Wemos4");
   Serial.println("Waiting for request");
 }
 
@@ -135,7 +142,7 @@ void sendRFIDData() {
   IPAddress serverIP(ipDelen[0], ipDelen[1], ipDelen[2], ipDelen[3]);
    WiFiClient client;
    if (client.connect(serverIP, port)) {
-    String rfidData = "";
+    String rfidData = "Voordeur: ";
     for (byte i = 0; i < rfid.uid.size; i++) {
       rfidData += String(rfid.uid.uidByte[i], HEX);
     }
