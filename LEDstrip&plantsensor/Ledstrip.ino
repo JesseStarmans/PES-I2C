@@ -17,6 +17,10 @@
 #define KLEURWISSEL D1 // ledstrip aan/uit
 #define UPDATES_PER_SECOND 100
 
+// const char* ssid = "PiNetGroepG";
+// const char* password = "GroepGNet";
+// const char* serverIPaddress = "10.42.0.251"; // IP address van de Pi 
+
 const char* ssid = "NSELab";
 const char* password = "NSELabWiFi";
 const char* serverIPaddress = "145.52.127.184"; // IP address van de Pi 
