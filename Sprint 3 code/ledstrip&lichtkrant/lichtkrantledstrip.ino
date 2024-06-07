@@ -477,13 +477,13 @@ const unsigned char font5x7 [] PROGMEM = {      //Numeric Font Matrix (Arranged 
   6,
 
 
-  B10001000,  //B(И)
-  B10001000,
-  B10011000,
-  B10101000,
-  B11001000,
+  B11110000, //B
   B10001000,
   B10001000,
+  B10110000,
+  B10001000,
+  B10001000,
+  B11110000,
   6,
 
 
@@ -1104,49 +1104,34 @@ void serverCode(){
   WiFiClient client = server.available();
   if(client){
     Serial.println("New Client");
-    while (client.connected()) {
-      if (client.available()) {
+    //while (client.connected()) {
+      //if (client.available()) {
         String request = client.readStringUntil('\r');
         Serial.println("Request: " + request);
 
         String weerTeGevenTekst;
         if (request.indexOf("lichtkrant:") != -1) {
-          weerTeGevenTekst = request.substring(12);
+        weerTeGevenTekst = request.substring(12);
+        weerTeGevenTekst.toCharArray(receivedText, 50);
+        weerTeGevenTekst[weerTeGevenTekst.length()] = '\0';
+        scrollMessage((const unsigned char *)weerTeGevenTekst.c_str());
         }
         String kleurqt;
-         if (request.indexOf("kleur:") != -1) {
-          kleurqt = request.substring(6);
-        }
-        //CRGB::Red, CRGB::Orange, CRGB::Yellow, CRGB::Green, CRGB::Blue, CRGB::Indigo, CRGB::Violet, CRGB::White, CRGB::Black
-        if (kleurqt == "Rood"){
-          fill_solid(leds, NUM_LEDS, HTMLColors[0]);  
-        }
-        else if(kleurqt == "Paars"){
-          fill_solid(leds, NUM_LEDS, HTMLColors[5]); 
-          
-        }
-        else if(kleurqt == "Geel"){
-          fill_solid(leds, NUM_LEDS, HTMLColors[2]); 
-        }
-        else if(kleurqt == "Groen"){
-          fill_solid(leds, NUM_LEDS, HTMLColors[3]); 
-        }
-        else if(kleurqt == "Blauw"){
-          fill_solid(leds, NUM_LEDS, HTMLColors[4]); 
-        }
+         if (request.indexOf("LEDstrip:") != -1) {
+          kleurqt = request.substring(10);
+          colorIndex = kleurqt.toInt();
+        fill_solid(leds, NUM_LEDS, HTMLColors[colorIndex]);
         FastLED.show();
+        }
         delay(100);
 
         client.stop();
         Serial.println("Client disconnected");
 
-        weerTeGevenTekst.toCharArray(receivedText, 50);
-        weerTeGevenTekst[weerTeGevenTekst.length()] = '\0';
-
-        scrollMessage((const unsigned char *)weerTeGevenTekst.c_str());
-    }
-  }
+   // }
+  //}
 }
+
 }
 
 void clientCode(){
@@ -1309,4 +1294,5 @@ void ledstripaansturen() {
             lastButtonPress = currentMillis;
         }
     }
+    
 }
