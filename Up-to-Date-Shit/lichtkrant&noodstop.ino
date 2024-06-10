@@ -1,4 +1,5 @@
-#define NOODSTOP D4
+#define NOODSTOP D7
+#define LEDPIN D4
 #include <FastLED.h>
 #include <ESP8266WiFi.h> // library voor de raspberry pi
 #include <WiFiClient.h>
@@ -27,6 +28,9 @@ const unsigned long debounceDelay = 300; // verhoog de debounce delay
 LedControl lc = LedControl(12, 14, 15, 4); //din cs
 unsigned long lastButtonPress = 0;
 
+volatile bool buttonPressed = false;
+void ICACHE_RAM_ATTR buttonISR();
+
 //const unsigned char scrollText[] PROGMEM = {" dit WERKT "};
 char receivedText[50] = " B  $ ";  // Buffer voor ontvangen tekst
 
@@ -35,6 +39,9 @@ WiFiServer server(serverPort);
 void setup() { 
   Serial.begin(115200);
   pinMode(NOODSTOP, INPUT_PULLUP);
+  pinMode(LEDPIN, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(NOODSTOP), buttonISR, RISING);
+
   WiFi.begin(ssid, password);
 
    while (WiFi.status() != WL_CONNECTED) {
@@ -94,7 +101,11 @@ void sendIP(String name){
 }
 
 void loop() {
-  
+  if(buttonPressed){
+    digitalWrite(LEDPIN, HIGH);
+    clientCodeMetSend("Noodknop:");
+    buttonPressed = false;
+  }
   serverCode();
   if(WiFi.status() != WL_CONNECTED){
     Serial.println("Reconecting......");
@@ -109,6 +120,11 @@ void loop() {
   }
   scrollMessage((const unsigned char *)receivedText);
 }
+
+void buttonISR() {
+  buttonPressed = true;
+}
+
 const unsigned char font5x7 [] PROGMEM = {      //Numeric Font Matrix (Arranged as 7x font data + 1x kerning data)
   B00000000,  //Space (Char 0x20)
   B00000000,
@@ -1093,7 +1109,6 @@ void serverCode(){
 
         client.stop();
         Serial.println("Client disconnected");
-
    // }
   //}
 }
@@ -1133,6 +1148,7 @@ void clientCode(){
     
     delay(500);
   }
+
 }
 
 void clientCodeMetSend(String toSend) {
@@ -1163,6 +1179,8 @@ void clientCodeMetSend(String toSend) {
     
     delay(500);
   }
+            digitalWrite(LEDPIN, LOW);
+
 }
 
 void scrollFont() {
