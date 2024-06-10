@@ -1,99 +1,142 @@
-#include &lt;ESP8266WiFi.h&gt;  // Bibliotheek voor ESP8266 WiFi-functionaliteit
-#include &lt;WiFiClient.h&gt;   // Bibliotheek voor WiFi-clientfunctionaliteit
-#include &lt;avr/pgmspace.h&gt; // Bibliotheek voor opslag van gegevens in het flash-geheugen
-#include &lt;LedControl.h&gt;   // Bibliotheek voor het aansturen van MAX7219 LED-displays
+#include <FastLED.h>
+#include <ESP8266WiFi.h> // library voor de raspberry pi
+#include <WiFiClient.h>
+#include <avr/pgmspace.h>
+#include <LedControl.h>
+#include <LedControl.h>
+#include <string>
 
-const char* ssid = "NSELab";          // WiFi SSID
-const char* password = "NSELabWiFi";  // WiFi-wachtwoord
-const char* serverIPaddress = "145.52.127.184"; // IP-adres van de server (Raspberry Pi)
-const int port = 8080;                // Poort voor de server
-const int serverPort = 6060;          // Lokale serverpoort voor de WiFiServer
+#define LED_PIN     D0 // pin waar de led op aangesloten is
+#define NUM_LEDS    8
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
+#define VERGROTING 30 // vergroting per helderheidsknop ingedrukt
+#define OMHOOG D2 // helderheid omhoog ledstrip
+#define OMLAAG D3 // helderheid omlaag ledstrip
+#define KLEURWISSEL D1 // ledstrip aan/uit
+#define UPDATES_PER_SECOND 100
 
-const int numDevices = 4;       // Aantal gebruikte MAX7219-apparaten
-const long scrollDelay = 50;    // Scrollvertraging in milliseconden
-unsigned long bufferLong[14] = {0};  // Buffer voor scrollende tekst
 
-LedControl lc = LedControl(12, 14, 15, 4); // Pinnen voor de LED-aansturing (DIN, CLK, LOAD, # devices)
+// const char* ssid = "PiNetGroepG";
+// const char* password = "GroepGNet";
+// const char* serverIPaddress = "10.42.0.251"; // IP address van de Pi 
+// const int port = 8080; // Port voor server
+// const int serverPort = 6060;
 
-// Buffer voor ontvangen tekst
-char receivedText[50] = " HOI IK BEN MARIJN ";  
+const char* ssid = "NSELab";
+const char* password = "NSELabWiFi";
+const char* serverIPaddress = "145.52.127.184"; // IP address van de Pi 
+const int port = 8080; // Port voor server
+const int serverPort = 6060;
 
-WiFiServer server(serverPort);  // Maak een server aan op de opgegeven poort
+const int numDevices = 4;      // number of MAX7219s used
+const long scrollDelay = 50;   // adjust scrolling speed
+unsigned long bufferLong [14] = {0};
+const unsigned long debounceDelay = 300; // verhoog de debounce delay
+
+LedControl lc = LedControl(12, 14, 15, 4); //din cs
+uint8_t helderheid = 128; 
+int colorIndex = 0; // Index voor de huidige kleur
+unsigned long lastButtonPress = 0;
+
+CRGB leds[NUM_LEDS];
+const CRGB HTMLColors[] = {
+    CRGB::Red, CRGB::Orange, CRGB::Yellow, CRGB::Green, CRGB::Blue, CRGB::Indigo, CRGB::Violet, CRGB::White, CRGB::Black
+};
+//const unsigned char scrollText[] PROGMEM = {" dit WERKT "};
+char receivedText[50] = " B  $ ";  // Buffer voor ontvangen tekst
+
+WiFiServer server(serverPort);
 
 void setup() { 
-  Serial.begin(115200);  // Initialiseer seriële communicatie op 115200 baud
+  Serial.begin(115200);
+    FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.setBrightness(helderheid);
+    fill_solid(leds, NUM_LEDS, HTMLColors[colorIndex]);  
+    FastLED.show();
+    
+    pinMode(OMHOOG, INPUT);
+    pinMode(OMLAAG, INPUT);
+    pinMode(KLEURWISSEL, INPUT);
+    pinMode(OMHOOG, INPUT_PULLUP);
+    pinMode(OMLAAG, INPUT_PULLUP);
+    pinMode(KLEURWISSEL, INPUT_PULLUP);
 
-  // Verbinden met WiFi
   WiFi.begin(ssid, password);
 
-  // Wacht tot WiFi is verbonden
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Connecting to WiFi...");
-  }
+   while (WiFi.status() != WL_CONNECTED) {
+     delay(1000);
+     Serial.println("Connecting to WiFi...");
+   }
 
-  Serial.println("Connected to WiFi");  // Bevestig WiFi-verbinding
+  Serial.println("Connected to WiFi");
 
-  // Start de TCP-server
+  // start TCP server
   server.begin();
   Serial.println("Server started");
   Serial.print("IP: ");
-  Serial.println(WiFi.localIP());  // Print het lokale IP-adres
-
-  // Stuur het IP-adres van dit apparaat naar de server
+  Serial.println(WiFi.localIP());
+  
+  // sendIP functies bestaan om de server IP invulling te geven. Comment uit wat je niet gebruikt
   sendIP("Wemos1");
-  //sendIP("Wemos2");
+  sendIP("Wemos2");
   //sendIP("Wemos3");
   Serial.println("Waiting for request");
-
-  // Initialiseer elk MAX7219 bordje
-  for (int x = 0; x &lt; numDevices; x++) {
-    lc.shutdown(x, false);  // Haal de MAX72XX uit de energiebesparende modus
-    lc.setIntensity(x, 8);  // Stel de helderheid in op gemiddeld niveau
-    lc.clearDisplay(x);     // Maak het display leeg
+   for (int x = 0; x < numDevices; x++) {
+    lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
+    lc.setIntensity(x, 8);      // Set the brightness to default value
+    lc.clearDisplay(x);         // and clear the display
   }
 }
 
-void sendIP(String name) {
-  int ipDelen[4];  // Array voor het opslaan van de IP-adressen
+void sendIP(String name){
+  int ipDelen[4];
   int i = 0;
   String tempString = serverIPaddress;
   String bufferIP;
-  while (tempString.length() &gt; 0) {
+  while (tempString.length() > 0) {
     bufferIP = tempString.substring(0, tempString.indexOf('.'));
     ipDelen[i++] = bufferIP.toInt();
     tempString = tempString.substring(tempString.indexOf('.') + 1);
   }
   IPAddress serverIP(ipDelen[0], ipDelen[1], ipDelen[2], ipDelen[3]);
-
+  
   WiFiClient client;
-  if (client.connect(serverIP, port)) {  // Probeer verbinding te maken met de server
+  if (client.connect(serverIP, port)){
     Serial.println("Connected to server");
-
-    // Stuur een bericht naar de server met het IP-adres van dit apparaat
-    IPAddress localIP = WiFi.localIP();
-    char ipFull[50] = "";
-    sprintf(ipFull, "%s %d.%d.%d.%d", name, localIP[0], localIP[1], localIP[2], localIP[3]);
-    Serial.println(ipFull);
-    client.println(ipFull);
-    delay(150);
-    client.stop();  // Verbreek de verbinding met de server
-  } else {
+  
+  // Send a message to the server
+  IPAddress localIP = WiFi.localIP();
+  Serial.println(localIP);
+  char ipFull[50] = "";
+  sprintf(ipFull, "%s %d.%d.%d.%d", name, localIP[0], localIP[1],localIP[2],localIP[3]);
+  Serial.println(ipFull);
+  client.println(ipFull);
+  delay(150);
+  client.stop();
+  }
+  else {
     Serial.println("Unable to connect to server");
   }
 }
 
 void loop() {
-  serverCode();  // Verwerk binnenkomende clientverzoeken
-  if (Serial.available() &gt; 0) {  // Controleer of er seriële gegevens beschikbaar zijn
+  
+  serverCode();
+  if(WiFi.status() != WL_CONNECTED){
+    Serial.println("Reconecting......");
+    while(!WiFi.reconnect()){
+
+    }
+  }
+  if (Serial.available() > 0) {
     String inlees = Serial.readStringUntil('\n');
     Serial.println("Ontvangen data: " + inlees);
-    clientCodeMetSend(inlees);  // Verwerk de ontvangen seriële gegevens
+    clientCodeMetSend(inlees);
   }
-  scrollMessage((const unsigned char *)receivedText);  // Scroll het ontvangen bericht
+  scrollMessage((const unsigned char *)receivedText);
 }
-//hier onder worden de letters, cijfers en de karakters geinitializeerd zodat de goede led aangezet wordt per letter
-const unsigned char font5x7[] PROGMEM = { // Numerieke Font Matrix (Gerangschikt als 7x fongegevens + 1x kerning gegevens)
+const unsigned char font5x7 [] PROGMEM = {      //Numeric Font Matrix (Arranged as 7x font data + 1x kerning data)
   B00000000,  //Space (Char 0x20)
   B00000000,
   B00000000,
@@ -134,13 +177,13 @@ const unsigned char font5x7[] PROGMEM = { // Numerieke Font Matrix (Gerangschikt
   6,
 
 
-  B00100000,  //$
-  B01111000,
-  B10100000,
-  B01110000,
-  B00101000,
-  B11110000,
-  B00100000,
+  B00111000, //$
+  B01000000,
+  B11111000,
+  B01000000,
+  B11111000,
+  B01000000,
+  B00111000,
   6,
 
 
@@ -434,13 +477,13 @@ const unsigned char font5x7[] PROGMEM = { // Numerieke Font Matrix (Gerangschikt
   6,
 
 
-  B10001000,  //B(И)
-  B10001000,
-  B10011000,
-  B10101000,
-  B11001000,
+  B11110000, //B
   B10001000,
   B10001000,
+  B10110000,
+  B10001000,
+  B10001000,
+  B11110000,
   6,
 
 
@@ -1051,138 +1094,143 @@ const unsigned char font5x7[] PROGMEM = { // Numerieke Font Matrix (Gerangschikt
   B00000000,
   B00000000,
   B00000000,
-  5
+  5,
+
+
 
 };
 
-void serverCode() {
-  WiFiClient client = server.available();  // Controleer of een client is verbonden
-
-  if (client) {
+void serverCode(){
+  WiFiClient client = server.available();
+  if(client){
     Serial.println("New Client");
-    while (client.connected()) {
-      if (client.available()) {
-        String request = client.readStringUntil('\r');  // Lees het verzoek van de client
+    //while (client.connected()) {
+      //if (client.available()) {
+        String request = client.readStringUntil('\r');
         Serial.println("Request: " + request);
 
         String weerTeGevenTekst;
-        if (request.indexOf("lichtkrant:") != -1) {  // Zoek naar 'lichtkrant:' in het verzoek
-          weerTeGevenTekst = request.substring(12);  // Haal de tekst na 'lichtkrant:' op
-        }
-        
-        delay(100);
-
-        client.stop();  // Verbreek de verbinding met de client
-        Serial.println("Client disconnected");
-
-        // Zet de tekst om naar een char array en sla deze op in receivedText
+        if (request.indexOf("lichtkrant:") != -1) {
+        weerTeGevenTekst = request.substring(12);
         weerTeGevenTekst.toCharArray(receivedText, 50);
         weerTeGevenTekst[weerTeGevenTekst.length()] = '\0';
+        scrollMessage((const unsigned char *)weerTeGevenTekst.c_str());
+        }
+        String kleurqt;
+         if (request.indexOf("LEDstrip:") != -1) {
+          kleurqt = request.substring(10);
+          colorIndex = kleurqt.toInt();
+        fill_solid(leds, NUM_LEDS, HTMLColors[colorIndex]);
+        FastLED.show();
+        }
+        delay(100);
 
-        // Scroll het ontvangen bericht
-        scrollMessage((const unsigned char *)weerTeGevenTekst);
-      }
-    }
-  }
+        client.stop();
+        Serial.println("Client disconnected");
+
+   // }
+  //}
 }
 
-void clientCode() {
-  if (WiFi.status() == WL_CONNECTED) {  // Controleer of WiFi verbonden is
+}
+
+void clientCode(){
+  if (WiFi.status() == WL_CONNECTED) {
     int ipDelen[4];
     int i = 0;
     String tempString = serverIPaddress;
     String bufferIP;
-    while (tempString.length() &gt; 0) {
+    while (tempString.length() > 0) {
       bufferIP = tempString.substring(0, tempString.indexOf('.'));
       ipDelen[i++] = bufferIP.toInt();
       tempString = tempString.substring(tempString.indexOf('.') + 1);
     }
     IPAddress serverIP(ipDelen[0], ipDelen[1], ipDelen[2], ipDelen[3]);
-
+  
     WiFiClient client;
     
     if (client.connect(serverIP, port)) {
       Serial.println("Connected to server");
       
-      client.println("Hello from Wemos Lolin Mini!");  // Stuur een testbericht naar de server
+      client.println("Hello from Wemos Lolin Mini!");
       delay(150);
 
-      while (client.available() &gt; 0) {
-        String response = client.readStringUntil('\r');  // Lees het antwoord van de server
+      while (client.available() > 0) {
+        String response = client.readStringUntil('\r');
         Serial.println(response);
       }
 
-      client.stop();  // Verbreek de verbinding met de server
+      client.stop();
     } else {
       Serial.println("Connection to server failed");
     }
     
-    delay(5000);  // Wacht 5 seconden voordat opnieuw wordt geprobeerd
+    delay(500);
   }
 }
 
 void clientCodeMetSend(String toSend) {
-  if (WiFi.status() == WL_CONNECTED) {  // Controleer of WiFi verbonden is
+  if (WiFi.status() == WL_CONNECTED) {
     int ipDelen[4];
     int i = 0;
     String tempString = serverIPaddress;
     String bufferIP;
-    while (tempString.length() &gt; 0) {
+    while (tempString.length() > 0) {
       bufferIP = tempString.substring(0, tempString.indexOf('.'));
       ipDelen[i++] = bufferIP.toInt();
       tempString = tempString.substring(tempString.indexOf('.') + 1);
     }
     IPAddress serverIP(ipDelen[0], ipDelen[1], ipDelen[2], ipDelen[3]);
-
+  
     WiFiClient client;
     
     if (client.connect(serverIP, port)) {
       Serial.println("Connected to server");
       
-      client.println(toSend.c_str());  // Stuur de opgegeven string naar de server
+      client.println(toSend.c_str());
       delay(150);
 
-      client.stop();  // Verbreek de verbinding met de server
+      client.stop();
     } else {
       Serial.println("Connection to server failed");
     }
     
-    delay(5000);  // Wacht 5 seconden voordat opnieuw wordt geprobeerd
+    delay(500);
   }
 }
 
 void scrollFont() {
-  // Scroll door alle tekens in het font
-  for (int counter = 0x20; counter &lt; 0x80; counter++) {
+  for (int counter = 0x20; counter < 0x80; counter++) {
     loadBufferLong(counter);
     delay(500);
   }
 }
 
-void scrollMessage(const unsigned char *messageString) {
-  // Scroll een bericht over het display
+void scrollMessage(const unsigned char * messageString) {
   int counter = 0;
   int myChar = 0;
   do {
-    myChar = pgm_read_byte_near(messageString + counter);  // Lees een teken uit het bericht
+    ledstripaansturen();
+    FastLED.show();
+    myChar =  pgm_read_byte_near(messageString + counter);
     if (myChar != 0) {
-      loadBufferLong(myChar);  // Laad het teken in de buffer
+      loadBufferLong(myChar);
     }
     counter++;
-  } while (myChar != 0);
+  }
+  while (myChar != 0);
 }
 
 void loadBufferLong(int ascii) {
-  // Laad een teken in de scrollbuffer
-  if (ascii &gt;= 0x20 &amp;&amp; ascii &lt;= 0xff) {
-    for (int a = 0; a &lt; 7; a++) {
+  if (ascii >= 0x20 && ascii <= 0xff) {
+    for (int a = 0; a < 7; a++) {
       unsigned long c = pgm_read_byte_near(font5x7 + ((ascii - 0x20) * 8) + a);
       unsigned long x = bufferLong[a * 2];
       x = x | c;
       bufferLong[a * 2] = x;
     }
     byte count = pgm_read_byte_near(font5x7 + ((ascii - 0x20) * 8) + 7);
-    for (byte x = 0; x &lt; count; x++) {
+    for (byte x = 0; x < count; x++) {
       rotateBufferLong();
       printBufferLong();
       delay(scrollDelay);
@@ -1191,31 +1239,60 @@ void loadBufferLong(int ascii) {
 }
 
 void rotateBufferLong() {
-  // Roteer de buffer voor scrollen
-  for (int a = 0; a &lt; 7; a++) {
+  for (int a = 0; a < 7; a++) {
     unsigned long x = bufferLong[a * 2];
     byte b = bitRead(x, 31);
-    x = x &lt;&lt; 1;
+    x = x << 1;
     bufferLong[a * 2] = x;
     x = bufferLong[a * 2 + 1];
-    x = x &lt;&lt; 1;
+    x = x << 1;
     bitWrite(x, 0, b);
     bufferLong[a * 2 + 1] = x;
   }
 }
 
 void printBufferLong() {
-  // Print de buffer naar het display
-  for (int a = 0; a &lt; 7; a++) {
+  for (int a = 0; a < 7; a++) {
     unsigned long x = bufferLong[a * 2 + 1];
     byte y = x;
     lc.setRow(3, a, y);
     x = bufferLong[a * 2];
-    y = (x &gt;&gt; 24);
+    y = (x >> 24);
     lc.setRow(2, a, y);
-    y = (x &gt;&gt; 16);
+    y = (x >> 16);
     lc.setRow(1, a, y);
-    y = (x &gt;&gt; 8);
+    y = (x >> 8);
     lc.setRow(0, a, y);
   }
+}
+
+void ledstripaansturen() {
+    unsigned long currentMillis = millis();
+    if ((currentMillis - lastButtonPress) > debounceDelay) {
+        if (digitalRead(OMHOOG) == LOW) {
+            helderheid += VERGROTING;
+            FastLED.setBrightness(helderheid);
+            FastLED.show();
+            Serial.println("Helderheid omhoog: " + String((int)FastLED.getBrightness()));
+            lastButtonPress = currentMillis;
+        }
+
+        if (digitalRead(KLEURWISSEL) == LOW) {
+            colorIndex = (colorIndex + 1) % (sizeof(HTMLColors) / sizeof(HTMLColors[0]));
+            fill_solid(leds, NUM_LEDS, HTMLColors[colorIndex]);
+            Serial.println("Kleur wisselen: " + String(colorIndex));
+            FastLED.show();
+            lastButtonPress = currentMillis;
+        }
+
+        if (digitalRead(OMLAAG) == LOW) {
+                helderheid -= VERGROTING;  
+            
+            FastLED.setBrightness(helderheid);
+            Serial.println("Helderheid omlaag: " + String((int)FastLED.getBrightness()));
+            FastLED.show();
+            lastButtonPress = currentMillis;
+        }
+    }
+    
 }
