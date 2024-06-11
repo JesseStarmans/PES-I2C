@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['schuifdeur_0',['Schuifdeur',['../class_schuifdeur.html#a55367114b1c1585e38c3468cc4e3bc5b',1,'Schuifdeur']]],
+  ['senddata_1',['sendData',['../class_socket_client.html#a8909a16e2465fcedf3e38ed29f09f7b3',1,'SocketClient::sendData()'],['../class_socket_server.html#a5f49b9a12fd499fde0cc68f6f4ef256f',1,'SocketServer::sendData()']]],
+  ['sendi2cto_2',['sendI2CTo',['../class_i2_c_connection.html#a31a813ec5115448f6086667e8ecc30ad',1,'I2CConnection']]],
+  ['sendinput_3',['sendInput',['../class_wemos_client.html#ab6b2aec4980b44ec4998dff77bd0fa95',1,'WemosClient']]],
+  ['sendip_4',['sendIP',['../class_wemos_client.html#a2f61deb786ecd34bd9603669280cc2ce',1,'WemosClient']]],
+  ['sendmessage_5',['sendMessage',['../class_q_t_socket_client.html#ab25360a530451e2cc9abe612cccbf18b',1,'QTSocketClient']]],
+  ['sendmessagetoclients_6',['sendMessageToClients',['../class_q_t_socket_server.html#a01d7c4501d3409884659fd6e32096def',1,'QTSocketServer']]],
+  ['sendtotemp_7',['sendToTemp',['../_i2_c_test_8cpp.html#a39a2687b8d2309ef569145d87e1c653f',1,'I2CTest.cpp']]],
+  ['serveraccept_8',['serverAccept',['../class_socket_server.html#a58362554d3c65ed2ca71e65651ed0a53',1,'SocketServer']]],
+  ['servercode_9',['serverCode',['../_eigen_wemos_klasse_8ino.html#a0feb8f324ebf27245792967858fdd630',1,'EigenWemosKlasse.ino']]],
+  ['serverlisten_10',['serverListen',['../class_socket_server.html#ab742c7e5d268cbc174fb6af0f3fe63df',1,'SocketServer']]],
+  ['setup_11',['setup',['../_eigen_wemos_klasse_8ino.html#a4fc01d736fe50cf5b977f755b675f11d',1,'EigenWemosKlasse.ino']]],
+  ['setupwemosip_12',['setupWemosIP',['../class_socket_server.html#ad8ec2117b0e55cb7f60d90c85368fb4f',1,'SocketServer']]],
+  ['sluit_13',['sluit',['../class_deur.html#a5a15f1848aee6ff7f65e096646baad4f',1,'Deur']]],
+  ['socketclient_14',['SocketClient',['../class_socket_client.html#a4dffba6cbd7490bd9f196cd6c0800ada',1,'SocketClient']]],
+  ['socketserver_15',['SocketServer',['../class_socket_server.html#a4f50740e8f8ae399c1cd22c3e688ffc2',1,'SocketServer']]],
+  ['startserver_16',['startServer',['../class_q_t_socket_server.html#a91a1631859c70d9a2030f1bd4a4bf882',1,'QTSocketServer']]],
+  ['stopserver_17',['stopServer',['../class_q_t_socket_server.html#a91a234e3c2ca971e2776dabe1386fe19',1,'QTSocketServer']]],
+  ['systemclock_5fconfig_18',['SystemClock_Config',['../main_c_o2_8c.html#a70af21c671abfcc773614a9a4f63d920',1,'mainCO2.c']]]
+];

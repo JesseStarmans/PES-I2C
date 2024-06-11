@@ -1,0 +1,11 @@
+release/deur.o
+release/draaideur.o
+release/main.o
+release/mainwindow.o
+release/schuifdeur.o
+release/socketclient.o
+release/socketserver.o
+release/indicator.o
+release/moc_mainwindow.o
+release/moc_socketclient.o
+release/moc_socketserver.o

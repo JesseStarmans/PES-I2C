@@ -1,0 +1,10 @@
+debug/deur.o
+debug/draaideur.o
+debug/main.o
+debug/mainwindow.o
+debug/schuifdeur.o
+debug/socketclient.o
+debug/socketserver.o
+debug/moc_mainwindow.o
+debug/moc_socketclient.o
+debug/moc_socketserver.o
