@@ -16,6 +16,7 @@
 // const char* ssid = "PiNetGroepG";
 // const char* password = "GroepGNet";
 // const char* serverIPaddress = "10.42.0.251"; // IP address van de Pi 
+// const int serverPort = 6060;
 
 const char* ssid = "NSELab";
 const char* password = "NSELabWiFi";
