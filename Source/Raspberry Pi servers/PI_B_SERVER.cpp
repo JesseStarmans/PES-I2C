@@ -8,10 +8,12 @@
 #define tempSlave 0x20
 #define buzzerSlave 0x10
 #define servoSlave 0x30
-//#define OTHER_PI "10.42.0.251"
-//#define THIS_PI "10.42.0.1"
-#define OTHER_PI "145.52.127.184"
-#define THIS_PI "145.52.127.177"
+
+#define OTHER_PI "10.42.0.251"
+#define THIS_PI "10.42.0.1"
+
+// #define OTHER_PI "145.52.127.184"
+// #define THIS_PI "145.52.127.177"
 
 using namespace std;
 map<string, int> command{{"Error", 0x00}, {"Disconnected", 0x01}, {"CheckTemp", 200}, {"Check Luchtvochtig", 0x23}, 
@@ -110,6 +112,12 @@ void sendDrukSensor(uint8_t key) {
     }
 
     string data = "RDruk: " + to_string(received.at(2));
+
+    if (received.at(2) == 1) {
+        I2CConnection slaveBeweging(buzzerSlave);
+        vector<uint8_t> toSend = {208};
+        slaveBeweging.sendI2CTo(1, toSend, 2);
+    }
 
     SocketClient client(8080, OTHER_PI);
     client.sendData(data);
