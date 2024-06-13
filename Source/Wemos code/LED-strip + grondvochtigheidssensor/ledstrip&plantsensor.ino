@@ -202,9 +202,9 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 void ledstripaansturen() {
     unsigned long currentMillis = millis();
-    if ((currentMillis - lastButtonPress) > debounceDelay) {
-        if (digitalRead(OMHOOG) == LOW) {
-           if((int)helderheid + VERGROTING >= 250){
+    if ((currentMillis - lastButtonPress) > debounceDelay) { // Debounce
+        if (digitalRead(OMHOOG) == LOW) { // Functie helderheid omhoog
+           if((int)helderheid + VERGROTING >= 250){ // Zet om naar int en zet randwaarde zodat hij niet hoger dan 250 kan
               helderheid = 250;
            }
            else{
@@ -221,7 +221,7 @@ void ledstripaansturen() {
         }
 
         if (digitalRead(KLEURWISSEL) == LOW) {
-            colorIndex = (colorIndex + 1) % (sizeof(HTMLColors) / sizeof(HTMLColors[0]));
+            colorIndex = (colorIndex + 1) % (sizeof(HTMLColors) / sizeof(HTMLColors[0])); // Cycle door de kleuren heen
             fill_solid(leds, NUM_LEDS, HTMLColors[colorIndex]);
             Serial.println("Kleur wisselen: " + String(colorIndex));
             FastLED.show();
@@ -229,7 +229,7 @@ void ledstripaansturen() {
         }
 
         if (digitalRead(OMLAAG) == LOW) {
-           if((int)helderheid - VERGROTING <= 0){
+           if((int)helderheid - VERGROTING <= 0){ // Randwaarde zodat de led niet overspringt
               helderheid = 0;
            }
            else{
