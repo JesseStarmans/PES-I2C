@@ -8,17 +8,17 @@
 #include <string>
 
 
-// const char* ssid = "PiNetGroepG";
-// const char* password = "GroepGNet";
-// const char* serverIPaddress = "10.42.0.251"; // IP address van de Pi 
-// const int port = 8080; // Port voor server
-// const int serverPort = 6060;
-
-const char* ssid = "NSELab";
-const char* password = "NSELabWiFi";
-const char* serverIPaddress = "145.52.127.184"; // IP address van de Pi 
+const char* ssid = "PiNetGroepG";
+const char* password = "GroepGNet";
+const char* serverIPaddress = "10.42.0.251"; // IP address van de Pi 
 const int port = 8080; // Port voor server
 const int serverPort = 6060;
+
+// const char* ssid = "NSELab";
+// const char* password = "NSELabWiFi";
+// const char* serverIPaddress = "145.52.127.184"; // IP address van de Pi 
+// const int port = 8080; // Port voor server
+// const int serverPort = 6060;
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 50;   // adjust scrolling speed
@@ -1247,3 +1247,11 @@ void printBufferLong() {
     lc.setRow(0, a, y);
   }
 }
+
+/*
+Overzicht van de werking
+- scrollFont(): Loopt door een reeks ASCII-tekens en laadt ze één voor één in de buffer met een vertraging.
+- scrollMessage(const unsigned char *messageString): Loopt door een string en laadt elk karakter in de buffer.
+- loadBufferLong(int ascii): Laadt het bitpatroon van een ASCII-teken in de buffer en rotert de buffer voor animatie.
+- rotateBufferLong(): Verschijft de bits in de buffer voor het scroll-effect.
+- printBufferLong(): Schrijft de inhoud van de buffer naar de display. */
