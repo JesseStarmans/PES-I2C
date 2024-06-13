@@ -3,13 +3,13 @@
 
 #include <string>
 
-//#define  PI_B "10.42.0.1"
-//#define MY_IP "10.42.0.251"
-//#define QT "10.42.0.190"
+#define  PI_B "10.42.0.1"
+#define MY_IP "10.42.0.251"
+#define QT "10.42.0.190"
 
-#define PI_B "145.52.127.177"
-#define MY_IP "145.52.127.184"
-#define QT "145.52.127.223"
+// #define PI_B "145.52.127.177"
+// #define MY_IP "145.52.127.184"
+// #define QT "145.52.127.223"
 
 vector<string> IPsWemos;
 
@@ -201,12 +201,16 @@ int checkReceived(std::string received) {
 			client.sendData(received);
 		}
 		else if (received.find("LEDstrip: ") != std::string::npos) {					//Verander de kleur van de LED strip (naar Wemos)
-			SocketClient wemosClient(6060, IPsWemos[0].c_str());
+			SocketClient wemosClient(6060, IPsWemos[1].c_str());
 			wemosClient.sendData(received);
 		}
 		else if (received.find("207") != std::string::npos) {							//Reset alarm (naar STM)
 			SocketClient client(7070, PI_B);
 			client.sendData(received);
+		}
+		else if (received == "Noodknop:") {
+			SocketClient QTClient(9090, QT);
+			QTClient.sendData(received);
 		}
 		else {
 			cout <<"Onbekende data ontvangen: "<<received<<endl;
@@ -220,9 +224,9 @@ int main(void) {
 	
 	IPsWemos = server.setupWemosIP();
 
-	for (auto it : IPsWemos) {
-		cout<<it<<endl;
-	}
+	// for (auto it : IPsWemos) {
+	// 	cout<<it<<endl;
+	// }
 
 	server.serverListen();
 
